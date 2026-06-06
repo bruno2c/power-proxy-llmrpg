@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>⚖️ POWER PROXY // BOARDROOM TERMINAL v1.0</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/styles.css" />
+        <script src="js/prompts.js" defer></script>
+        <script src="js/state.js" defer></script>
+        <script src="js/ui.js" defer></script>
+        <script src="js/charts.js" defer></script>
+        <script src="js/crop.js" defer></script>
+        <script src="js/directory.js" defer></script>
+        <script src="js/render.js" defer></script>
+        <script src="js/sync.js" defer></script>
+        <script src="js/campaign.js" defer></script>
+        <script src="js/init.js" defer></script>
+    </head>
+    <body>
+        <div id="reauth-banner" style="display: none; background: var(--comic-amber); color: var(--ink-black); border-bottom: var(--border-thick); padding: 12px; font-weight: bold; font-size: 13px; text-align: center; cursor: pointer; position: sticky; top: 0; z-index: 10000;" onclick="window.restoreDirectoryConnection()">
+            ⚠️ CONNECTION SUSPENDED // Click here to re-authorize access to your local folder: <span id="reauth-folder-name" style="text-decoration: underline;"></span>
+        </div>
+        <div class="container">
+            <header id="main-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--border-thick); padding-bottom: 12px; margin-bottom: 20px;">
+                <div>
+                    <h1 style="margin: 0; font-size: 24px; color: var(--comic-amber); letter-spacing: 1px;">POWER PROXY // BOARDROOM DECISION SUITE</h1>
+                    <div class="header-sub" style="margin-top: 4px;">
+                        CORPORATE ASSET COMPLIANCE MATRIX // EXECUTIVE PROXY CORE v1.0
+                    </div>
+                </div>
+                <button id="btn-exit-menu" class="btn-utility" onclick="window.exitToMainMenu()" style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: var(--panel-nested); border: var(--border-thin); display: none; margin-left: auto;">
+                    🚪 MAIN MENU / SWITCH CAMPAIGN
+                </button>
+            </header>
+
+            <div class="tabs" id="main-navigation-tabs">
+                <button
+                    class="tab-btn"
+                    id="btn-live-dashboard"
+                    data-tab="live-dashboard"
+                    onclick="window.switchTab('live-dashboard')"
+                >
+                    💼 BOARDROOM MONITOR
+                </button>
+                <button
+                    class="tab-btn"
+                    id="btn-analytics-tab"
+                    data-tab="analytics-tab"
+                    onclick="window.switchTab('analytics-tab')"
+                >
+                    📈 DEALS & ANALYTICS
+                </button>
+                <button
+                    class="tab-btn"
+                    id="btn-storybook-tab"
+                    data-tab="storybook-tab"
+                    onclick="window.switchTab('storybook-tab')"
+                >
+                    📖 VISUAL STORYBOOK
+                </button>
+                <button
+                    class="tab-btn"
+                    id="btn-init-matrix"
+                    data-tab="init-matrix"
+                    onclick="window.switchTab('init-matrix')"
+                >
+                    👥 BOARD APPOINTMENT
+                </button>
+                <button
+                    class="tab-btn"
+                    id="btn-rolodex-tab"
+                    data-tab="rolodex-tab"
+                    onclick="window.switchTab('rolodex-tab')"
+                >
+                    📋 POWER CONTACTS
+                </button>
+                <button
+                    class="tab-btn"
+                    id="btn-config-tab"
+                    data-tab="config-tab"
+                    onclick="window.switchTab('config-tab')"
+                >
+                    ⚙️ COMPLIANCE & DEALS
+                </button>
+            </div>
+
+            <!-- =================== WELCOME / MAIN MENU TAB =================== -->
+            <div id="welcome-tab" class="tab-content">
+                <div class="row-section" style="text-align: center; max-width: 600px; margin: 40px auto; padding: 30px; background: var(--panel-nested); border: var(--border-thick); box-shadow: 6px 6px 0px var(--ink-black);">
+                    <div style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 32px; color: var(--comic-amber); margin-bottom: 12px; letter-spacing: 2px;">
+                        POWER PROXY
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 30px; letter-spacing: 1px;">
+                        Prestige Boardroom Proxy Simulation
+                    </div>
+                    
+                    <button class="btn-submit" onclick="window.startNewCampaignWizard()" style="font-size: 16px; padding: 15px; width: 100%; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                        🏁 Create New Campaign
+                    </button>
+                    
+                    <div style="border-top: var(--border-thin); margin: 30px 0; position: relative;">
+                        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1a1e29; padding: 0 10px; font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">OR RESUME ACTIVATION</span>
+                    </div>
+
+                    <div style="font-size: 12px; font-weight: bold; color: var(--text-main); text-align: left; margin-bottom: 10px; text-transform: uppercase;">
+                        📂 Load Existing Campaign Slot:
+                    </div>
+                    
+                    <div id="welcome-campaign-list" style="display: flex; flex-direction: column; gap: 10px; text-align: left; max-height: 250px; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
+                        <!-- Populate dynamic slots -->
+                    </div>
+                    
+                    <div id="welcome-folder-option" style="display: block; border-top: var(--border-thin); padding-top: 15px; margin-top: 15px; text-align: left;">
+                        <div style="font-size: 11px; font-weight: bold; color: var(--comic-amber); margin-bottom: 8px; text-transform: uppercase;">Connected Folder Backup:</div>
+                        <button class="btn-utility" onclick="window.loadCampaignFromConnectedFolder()" style="width: 100%; padding: 10px; font-size: 12px;">
+                            📥 Connect & Load campaign_state.json from Local Folder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="live-dashboard" class="tab-content">
+                <div class="blueprint-dossier">
+                    <span style="color: var(--comic-amber)"
+                        >📋 TARGET DESIGN ENVIRONMENT CONFIGURATION:</span
+                    >
+                    <div
+                        style="
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 10px;
+                            margin-top: 8px;
+                            color: #fff;
+                        "
+                    >
+                        <div>
+                            • POWERTRAIN:
+                            <span id="lbl-meta-power"
+                                >EV [Electric Vehicle]</span
+                            >
+                        </div>
+                        <div>
+                            • FRAME MARKET:
+                            <span id="lbl-meta-seg">Track Weapon</span>
+                        </div>
+                        <div>
+                            • INITIAL FUNDING:
+                            <span id="lbl-meta-fund">Bootstrapped</span>
+                        </div>
+                        <div>
+                            • IDENTITY PERK:
+                            <span id="lbl-meta-perk">Corporate Dropout</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-section">
+                    <div class="section-title">📊 COMPANY CURRENT DATA</div>
+                    <div class="company-metrics-grid">
+                        <div class="num-box">
+                            <div class="num-label">
+                                Liquid Operational Capital
+                            </div>
+                            <div class="num-val" id="dash-cash">$120,000</div>
+                        </div>
+                        <div class="num-box">
+                            <div class="num-label">
+                                Current Weekly Burn Rate
+                            </div>
+                            <div
+                                class="num-val"
+                                id="dash-burn"
+                                style="color: var(--comic-red)"
+                            >
+                                $8,000
+                            </div>
+                        </div>
+                        <div class="num-box">
+                            <div class="num-label">
+                                Alpha Assembly Progress (<span
+                                    id="lbl-current-week"
+                                    >W1</span
+                                >)
+                            </div>
+                            <div
+                                class="num-val"
+                                id="txt-proto"
+                                style="color: var(--comic-amber)"
+                            >
+                                0%
+                            </div>
+                        </div>
+                        <div class="num-box" id="active-phase-card" style="display: none;">
+                            <div class="num-label">
+                                Active Campaign Phase
+                            </div>
+                            <div
+                                class="num-val"
+                                id="txt-active-phase"
+                                style="color: var(--comic-amber); font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 8px;"
+                            >
+                                -
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =================== GLOBAL OBJECTIVES SECTION =================== -->
+                <div class="row-section" id="global-objectives-section" style="display: none;">
+                    <div class="section-title">🎯 GLOBAL CAMPAIGN OBJECTIVES</div>
+                    <div class="objectives-grid" id="objectives-container">
+                        <!-- Dynamic objective cards will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- =================== FACILITY INFRASTRUCTURE SECTION =================== -->
+                <div class="row-section" id="facility-infrastructure-section" style="display: none;">
+                    <div class="section-title">🏭 WORKSHOP INFRASTRUCTURE & UTILITIES</div>
+                    
+                    <!-- Layout Grid for Carousel & Gauges -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px; align-items: start;">
+                        <!-- Facility Blueprint Schematic Carousel -->
+                        <div>
+                            <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                                🗺️ WORKSHOP BLUEPRINT SCHEMATIC
+                            </div>
+                            <div id="facility-carousel-container" style="display: flex; justify-content: center;">
+                                <!-- Facility Carousel renders here -->
+                            </div>
+                        </div>
+
+                        <!-- Environmental/Utility Grid Gauges -->
+                        <div>
+                            <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                                ⚡ ENVIRONMENTAL POWER & GRID UTILITIES
+                            </div>
+                            <div id="environmental-grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                                <!-- Environmental gauges render here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Bays & Project Clocks -->
+                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                        🏭 ACTIVE BAY MODULES & PROJECT CLOCKS
+                    </div>
+                    <div class="objectives-grid" id="active-bays-container" style="margin-bottom: 24px;">
+                        <!-- Active bay modules and project clocks render here -->
+                    </div>
+
+                    <!-- Infrastructure Nodes -->
+                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                        ⚙️ ACTIVE INFRASTRUCTURE MACHINERY & WORKSTATIONS
+                    </div>
+                    <div class="objectives-grid" id="infrastructure-nodes-container">
+                        <!-- Infrastructure cards render here -->
+                    </div>
+
+                    <!-- Structural Flaws -->
+                    <div id="structural-flaws-title-node" style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 24px; display: none;">
+                        ⚠️ ACTIVE STRUCTURAL FLAWS & SITE DRAWBACKS
+                    </div>
+                    <div class="objectives-grid" id="structural-flaws-container" style="display: none;">
+                        <!-- Flaw cards render here -->
+                    </div>
+                </div>
+
+                <!-- =================== INVENTORY TRACKING SECTION =================== -->
+                <div class="row-section" id="inventory-section" style="display: none;">
+                    <div class="section-title">📦 WORKSHOP INVENTORY TRACKING</div>
+                    
+                    <!-- Vehicles Sub-section -->
+                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px;">
+                        🚗 TRACK-READY VEHICLES & CHASSIS
+                    </div>
+                    <div class="objectives-grid" id="inventory-vehicles-container">
+                        <!-- Vehicle cards render here -->
+                    </div>
+
+                    <!-- Components Sub-section -->
+                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 24px;">
+                        🛠️ STRUCTURAL FEEDSTOCK & HARDWARE COMPONENTS
+                    </div>
+                    <div class="objectives-grid" id="inventory-components-container">
+                        <!-- Component cards render here -->
+                    </div>
+                </div>
+
+                <div class="row-section">
+                    <div class="section-title">
+                        👥 PERSONNEL ROSTER (CHAR PROFILES)
+                    </div>
+                    <div class="crew-roster-row" id="crew-roster-container">
+                        <!-- Dynamic crew cards will be rendered here -->
+                    </div>
+                </div>
+
+                <div class="row-section" id="synergy-section" style="display: none;">
+                    <div class="section-title">
+                        🤝 TEAM SYNERGY & RELATIONSHIPS
+                    </div>
+                    <div class="synergy-relationship-grid" id="synergy-relationship-container">
+                        <!-- Dynamic synergy panels with avatars will be rendered here -->
+                    </div>
+                </div>
+
+
+
+                <div class="split-feed-grid">
+                    <div class="row-section" style="margin-bottom: 0">
+                        <div class="section-title">
+                            📜 OPERATIONAL CHRONICLE (NARRATIVE LOG)
+                        </div>
+                        <ul id="timeline-container" class="ledger-stream">
+                            <li
+                                class="ledger-entry"
+                                style="color: var(--text-muted)"
+                            >
+                                No local logs cached. Start a campaign or sync a
+                                text data delta segment.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="row-section" style="margin-bottom: 0">
+                        <div class="section-title">
+                            📥 DATA SLATE UTILITY STORAGE
+                        </div>
+                        <textarea
+                            id="delta-input"
+                            placeholder="Drop raw weekly update JSON text blocks here..."
+                        ></textarea>
+                        
+                        <!-- DYNAMIC SCENARIO IMAGE UPLOAD INJECTION PANEL -->
+                        <div style="margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border: var(--border-thin);">
+                            <label style="font-size: 11px; font-weight: bold; color: var(--comic-amber); display: block; margin-bottom: 6px; text-transform: uppercase;">
+                                🖼️ Bind Active Scene Artwork (Optional):
+                            </label>
+                            <input type="file" id="scenario-img-input" accept="image/*" style="font-size: 12px; color: var(--text-main); display: block; margin-bottom: 8px;" />
+                            <div id="dashboard-folder-status" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                                Checking folder status...
+                            </div>
+                        </div>
+                        
+                        <label class="custom-checkbox-container">
+                            <input type="checkbox" id="chk-overwrite-chronicle" />
+                            <span class="custom-checkbox-checkmark"></span>
+                            <span>🚨 Overwrite chronicle history fully (disable append merge)</span>
+                        </label>
+
+                        <button
+                            class="btn-submit"
+                            onclick="window.syncDelta()"
+                            style="margin-top: 12px"
+                        >
+                            TRANSMIT LEDGER UPDATE
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKSHOP PERFORMANCE ANALYTICS PANEL TAB CONTAINER -->
+            <div id="analytics-tab" class="tab-content">
+                <div class="row-section">
+                    <div class="section-title">📈 WORKSHOP PERFORMANCE ANALYTICS</div>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-card-title">💵 CAPITAL TREND ($)</div>
+                            <div class="chart-container" id="cash-chart-container">
+                                <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 40px 0;">Record weekly updates to plot analytics.</div>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-card-title">🔥 BURN TREND ($)</div>
+                            <div class="chart-container" id="burn-chart-container">
+                                <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 40px 0;">Record weekly updates to plot analytics.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STORYBOOK WORKFLOW LAYOUT PANEL TAB CONTAINER -->
+            <div id="storybook-tab" class="tab-content">
+                <div class="row-section">
+                    <div class="section-title">📖 AUTOMOTIVE REVOLUTION RECORDED VISUAL HISTORY</div>
+                    <div id="storybook-container" class="storybook-grid">
+                        <!-- Rendered dynamically by script routines -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="init-matrix" class="tab-content">
+                <div class="row-section">
+                    <div class="section-title">
+                        ⚙️ STARTUP PARAMETERS CONFIGURATION MATRIX
+                    </div>
+                    <table class="form-table">
+                        <tr>
+                            <td
+                                style="
+                                    width: 35%;
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    color: #fff;
+                                "
+                            >
+                                Powertrain Core Blueprint
+                            </td>
+                            <td>
+                                <select id="p-powertrain">
+                                    <option
+                                        value="EV [Electric Vehicle] (Focus: Lithium Chemistry, BMS, High-Voltage systems)"
+                                    >
+                                        EV (Electric Vehicle Pack Architecture)
+                                    </option>
+                                    <option
+                                        value="ICE [Internal Combustion Engine] (Focus: Compression, Turbos, Fuel Mapping)"
+                                    >
+                                        ICE (Internal Combustion Powertrain
+                                        Block)
+                                    </option>
+                                    <option
+                                        value="H2 [Hydrogen Fuel Cell] (Focus: Platinum Catalysts, Pressure Tanks, Complex Plumbing)"
+                                    >
+                                        H2 (Hydrogen Fuel Cell Engine Matrix)
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    color: #fff;
+                                "
+                            >
+                                Target Structural Segment
+                            </td>
+                            <td>
+                                <select id="p-segment">
+                                    <option
+                                        value="Track Weapon (Ultra-light, extreme aero, high performance ceiling, niche market)"
+                                    >
+                                        Track Weapon (Aero Track Weapon Sports
+                                        Car)
+                                    </option>
+                                    <option
+                                        value="Urban Commuter (Hyper-efficient micro-car, optimized for scale, thin margins)"
+                                    >
+                                        Urban Commuter (Mass Micro-Car Platform)
+                                    </option>
+                                    <option
+                                        value="Overlander Truck (High-clearance utility workhorse, heavy components, premium markup)"
+                                    >
+                                        Overlander Truck (High Torque Utility
+                                        Workhorse)
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    color: #fff;
+                                "
+                            >
+                                Capital Vector Pools
+                            </td>
+                            <td>
+                                <select id="p-funding">
+                                    <option
+                                        value="Bootstrapped ($120k Cash, high crew loyalty, extreme personal risk)"
+                                    >
+                                        Bootstrapped Liquid Personal Savings
+                                        ($120k)
+                                    </option>
+                                    <option
+                                        value="Innovation Grant ($250k Cash, restricted by heavy regulatory red-tape and audits)"
+                                    >
+                                        State Innovation Grant Funding
+                                        allocation ($250k)
+                                    </option>
+                                    <option
+                                        value="Shadow Angel ($500k Cash, erratic investor makes unpredictable feature demands)"
+                                    >
+                                        Shadow Angel Private Asset Investor
+                                        ($500k)
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    color: #fff;
+                                "
+                            >
+                                Architect Backstory Lifepath
+                            </td>
+                            <td>
+                                <select id="p-perk">
+                                    <option
+                                        value="Corporate Dropout (+1 Tech on factory assemblies; Legacy auto executives hold a grudge)"
+                                    >
+                                        Factory Tier-1 Corporate Dropout
+                                    </option>
+                                    <option
+                                        value="Underground Tuner (+10% starting mechanic loyalty; -1 Charisma with state regulators)"
+                                    >
+                                        Grey Market Underground Mechanical Tuner
+                                    </option>
+                                    <option
+                                        value="Academic Prodigy (+1 Forward on software tasks; starting capital reduced by $10k legal debt)"
+                                    >
+                                        University Laboratory Academic Robotics
+                                        Prodigy
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                style="
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    color: #fff;
+                                "
+                            >
+                                Facility Structural Drawback (Flaw)
+                            </td>
+                            <td>
+                                <select id="p-flaw">
+                                    <option
+                                        value="Drafty Roof (20% chance tools/components short circuit or rust during rain turns)"
+                                    >
+                                        Drafty Workshop Roof Failure Risks
+                                    </option>
+                                    <option
+                                        value="Anxious Co-Founder (Sarah drops 5% morale/week automatically if capital drops under $20k)"
+                                    >
+                                        Risk-Averse Financial Co-Founder
+                                        Blueprint
+                                    </option>
+                                    <option
+                                        value="Improvised Tooling (+10% material costs due to lack of a precision CNC table)"
+                                    >
+                                        Improvised Manual Tooling Mills & Lathes
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span
+                                    style="
+                                        font-size: 13px;
+                                        font-weight: bold;
+                                        color: #fff;
+                                        display: block;
+                                    "
+                                    >Matrix Attribute Distribution Nodes</span
+                                >
+                                <div
+                                    style="
+                                        font-size: 11px;
+                                        color: var(--comic-amber);
+                                        margin-top: 4px;
+                                        font-weight: bold;
+                                    "
+                                >
+                                    AVAILABLE CORE CAPACITY:
+                                    <span id="pool-display">2</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div
+                                    style="
+                                        display: grid;
+                                        grid-template-columns: repeat(2, 1fr);
+                                        gap: 12px;
+                                    "
+                                >
+                                    <div
+                                        style="
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                        "
+                                    >
+                                        <span>FIN Nodes: </span>
+                                        <div class="counter-group">
+                                            <button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('tech', -1)"
+                                            >
+                                                -</button
+                                            ><span
+                                                id="v-tech"
+                                                style="
+                                                    width: 15px;
+                                                    text-align: center;
+                                                "
+                                                >0</span
+                                            ><button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('tech', 1)"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                        "
+                                    >
+                                        <span>CHA Nodes: </span>
+                                        <div class="counter-group">
+                                            <button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('cha', -1)"
+                                            >
+                                                -</button
+                                            ><span
+                                                id="v-cha"
+                                                style="
+                                                    width: 15px;
+                                                    text-align: center;
+                                                "
+                                                >0</span
+                                            ><button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('cha', 1)"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                        "
+                                    >
+                                        <span>OPS Nodes: </span>
+                                        <div class="counter-group">
+                                            <button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('log', -1)"
+                                            >
+                                                -</button
+                                            ><span
+                                                id="v-log"
+                                                style="
+                                                    width: 15px;
+                                                    text-align: center;
+                                                "
+                                                >0</span
+                                            ><button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('log', 1)"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                        "
+                                    >
+                                        <span>INT Nodes: </span>
+                                        <div class="counter-group">
+                                            <button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('per', -1)"
+                                            >
+                                                -</button
+                                            ><span
+                                                id="v-per"
+                                                style="
+                                                    width: 15px;
+                                                    text-align: center;
+                                                "
+                                                >0</span
+                                            ><button
+                                                class="btn-square"
+                                                onclick="window.adjustStat('per', 1)"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="margin-top: 24px">
+                        <label
+                            style="
+                                color: #fff;
+                                font-weight: bold;
+                                margin-bottom: 8px;
+                                display: block;
+                            "
+                            >DYNAMIC ENGINE SYSTEM PROMPT CODESTREAM</label
+                        >
+                        <textarea
+                            id="prompt-output"
+                            readonly
+                            style="height: 100px"
+                            placeholder="Finalize parameters to compile framework profiles..."
+                        ></textarea>
+                        <button
+                            class="btn-submit"
+                            onclick="window.compileMasterPrompt()"
+                        >
+                            COMPILE TARGET TIMELINE PROMPT
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        <!-- =================== TEAM ROLODEX TAB =================== -->
+        <div id="rolodex-tab" class="tab-content">
+            <div class="row-section">
+                <div class="section-title">
+                    📋 THE TEAM ROLODEX (CONTACTS GLOSSARY)
+                </div>
+                <p style="font-size: 13px; margin: 0 0 16px 0; color: var(--text-muted);">
+                    Track dynamic secondary characters and contacts discovered during narrative turns. Update dossier imagery or review notes here.
+                </p>
+                <div class="rolodex-grid" id="rolodex-grid-container">
+                    <!-- Dynamic contact cards will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- =================== CONFIG TAB =================== -->
+        <div id="config-tab" class="tab-content">
+            <div class="row-section">
+                <div class="section-title">
+                    🎮 AI SESSION INITIALIZER
+                </div>
+                <p style="font-size: 13px; margin: 0 0 16px 0; color: var(--text-muted);">
+                    When spinning up a new session or resuming the campaign in an empty AI chat window, copy and paste this merged instruction prompt (Core System Rules + Active Campaign State).
+                </p>
+                <textarea
+                    id="manual-prompt-node"
+                    class="rulebook-text"
+                    readonly
+                ></textarea>
+                <button class="btn-submit" onclick="window.copyManualPrompt()" style="margin-bottom: 0;">
+                    📋 COPY OPERATIONAL RULEBOOK PROMPT
+                </button>
+            </div>
+
+            <!-- =================== BLUEPRINT COURIER / IMAGE PROMPT GENERATOR =================== -->
+            <div class="row-section" id="blueprint-courier-section">
+                <div class="section-title">🖼️ BLUEPRINT COURIER (VISUAL RENDERER)</div>
+                <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: stretch; margin-top: 10px;">
+                    <!-- Left Component: Description -->
+                    <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; justify-content: center; gap: 12px;">
+                        <p style="font-size: 13px; line-height: 1.6; margin: 0; color: var(--text-main);">
+                            <strong>BLUEPRINT COURIER:</strong> Generate a visual blueprint of your current facility state using your local LLM image rendering engine. Use this when structural elements shift.
+                        </p>
+                        <p style="font-size: 11px; line-height: 1.4; margin: 0; color: var(--text-muted);">
+                            This compiler reads your active bays, installed heavy machinery, and facility flaws to dynamically format an isometric concept art prompt with strict Cyberpunk graphic novel constraints.
+                        </p>
+                    </div>
+
+                    <!-- Right Component: Styled Code Box & Button -->
+                    <div style="flex: 1.5; min-width: 320px; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; font-weight: bold; color: var(--comic-amber); text-transform: uppercase;">Generated Render prompt</span>
+                            <button 
+                                id="btn-copy-blueprint-prompt" 
+                                class="btn-utility" 
+                                onclick="window.copyBlueprintPromptToClipboard()" 
+                                style="padding: 6px 12px; font-size: 11px; font-weight: bold; background: var(--comic-amber); color: var(--ink-black); border: var(--border-thin); cursor: pointer;"
+                            >
+                                📋 COPY BLUEPRINT PROMPT
+                            </button>
+                        </div>
+                        <div style="position: relative; flex-grow: 1;">
+                            <textarea
+                                id="blueprint-prompt-textarea"
+                                readonly
+                                style="width: 100%; height: 180px; font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,0.3); border: var(--border-thick); color: var(--text-main); padding: 12px; box-sizing: border-box; resize: none;"
+                                placeholder="Awaiting facility state matrix ingestion..."
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-section">
+                <div class="section-title">⚙️ LOCAL SETTINGS & ASSETS MANAGER</div>
+                
+                <!-- Connection Status Card -->
+                <div style="background: var(--panel-nested); border: var(--border-thick); box-shadow: 4px 4px 0px var(--ink-black); padding: 20px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div>
+                            <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Directory Access Status</div>
+                            <div id="dir-status-text" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; letter-spacing: 1px;">LOADING...</div>
+                            <div id="dir-folder-name" style="font-size: 12px; margin-top: 4px; color: var(--text-main);">Scanning database...</div>
+                        </div>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button id="btn-manual-backup" class="btn-submit" style="margin-top: 0; padding: 10px 20px; font-size: 14px; background: var(--panel-nested); color: #fff; display: none;" onclick="window.triggerManualBackup()">
+                                💾 CREATE CAMPAIGN BACKUP
+                            </button>
+                            <button id="btn-connect-dir" class="btn-submit" style="margin-top: 0; padding: 10px 20px; font-size: 14px;" onclick="window.toggleDirectoryConnection()">
+                                📁 CONNECT LOCAL DIRECTORY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Slate Import / Export -->
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+                    <button class="btn-utility" onclick="window.exportDataSlateJson()" style="flex: 1; padding: 10px; font-size: 12px; font-weight: bold;">
+                        💾 EXPORT DATA SLATE (.JSON)
+                    </button>
+                    <button class="btn-utility" onclick="document.getElementById('file-loader-node').click()" style="flex: 1; padding: 10px; font-size: 12px; font-weight: bold;">
+                        📁 LOAD DATA SLATE (.JSON)
+                    </button>
+                    <input type="file" id="file-loader-node" style="display: none" accept=".json" onchange="window.importDataSlateJson(event)" />
+                </div>
+
+                <!-- Asset Naming convention details -->
+                <div class="blueprint-dossier" style="margin-bottom: 24px;">
+                    <span style="color: var(--comic-amber)">📋 EXPECTED ASSET NAMING STRUCTURE:</span>
+                    <p style="margin: 8px 0 0 0; line-height: 1.5;">
+                        To organize your local campaign assets, connect a local directory. The system will automatically create and use:
+                    </p>
+                    <ul style="margin: 6px 0 0 0; padding-left: 20px; line-height: 1.5;">
+                        <li>📂 <strong style="color: #fff;">backups/</strong> folder: contains rolling and archive JSON slates (e.g. <span style="color: var(--comic-green)">backups/campaign_state.json</span>).</li>
+                        <li>📂 <strong style="color: #fff;">storybook/</strong> folder: contains weekly illustrations with the naming convention <span style="color: var(--comic-green)">storybook/storybook_week_{week}.png</span>.</li>
+                        <li>📂 <strong style="color: #fff;">facility/</strong> folder: contains weekly blueprint schematics with the naming convention <span style="color: var(--comic-green)">facility/facility_week_{week}.png</span>.</li>
+                    </ul>
+                </div>
+
+                <!-- Campaign Asset Tracker Table -->
+                <div style="background: var(--panel-nested); border: var(--border-thick); box-shadow: 4px 4px 0px var(--ink-black); padding: 16px; overflow-x: auto;">
+                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase;">
+                        📅 Campaign Week Asset Tracker
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--ink-black); color: var(--text-muted);">
+                                <th style="padding: 10px;">Week</th>
+                                <th style="padding: 10px;">Expected Filename</th>
+                                <th style="padding: 10px;">JSON Tracking</th>
+                                <th style="padding: 10px;">Local Folder Status</th>
+                                <th style="padding: 10px; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="asset-tracker-body">
+                            <!-- Populated dynamically by app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast-layer" class="toast-overlay">
+        <div
+            style="font-weight: bold; color: var(--comic-amber)"
+            id="toast-title"
+        >
+            ⚙️ REGISTRY:
+        </div>
+        <div id="toast-msg" style="font-size: 13px">Online.</div>
+    </div>
+
+    <!-- BLUEPRINT FULLSCREEN REVIEW LIGHTBOX -->
+    <div id="blueprint-lightbox-modal" class="blueprint-lightbox" onclick="if(event.target === this) window.closeLightbox()">
+        <div class="lightbox-content-container">
+            <button class="lightbox-close-btn" onclick="window.closeLightbox()">❌ CLOSE REVIEW</button>
+            <div class="lightbox-img-wrapper">
+                <img id="lightbox-img-node" class="lightbox-img" src="" alt="Blueprint Detail" />
+            </div>
+            <div class="lightbox-caption-card">
+                <div id="lightbox-title-node" class="lightbox-title">WEEK 00 ASSEMBLY</div>
+                <p id="lightbox-desc-node" class="lightbox-desc">Detailed logs...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE DOSSIER CROP MODAL -->
+    <div id="crop-modal" class="crop-modal-overlay">
+        <div class="crop-modal-content">
+            <div style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; color: var(--comic-amber); margin-bottom: 12px;">
+                ✏️ ALIGN DOSSIER AVATAR
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 0; margin-bottom: 16px;">
+                Drag the image to pan. Use the slider below to zoom.
+            </p>
+            
+            <div class="crop-viewport" id="crop-viewport-container">
+                <img id="crop-img-node" src="" alt="Source Avatar" style="display: none;" />
+                <div class="crop-pill-overlay"></div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 10px; font-weight: bold; display: block; margin-bottom: 6px; color: var(--text-muted);">
+                    ZOOM SCALE
+                </label>
+                <input type="range" id="crop-zoom-slider" min="0.1" max="4" step="0.01" value="1" style="width: 100%; cursor: pointer;" />
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button class="btn-utility" onclick="window.cancelAvatarCrop()" style="background: var(--panel-nested); border: var(--border-thin); font-weight: bold; padding: 8px 16px;">
+                    CANCEL
+                </button>
+                <button class="btn-submit" onclick="window.applyAvatarCrop()" style="background: var(--comic-amber); color: var(--ink-black); font-weight: bold; padding: 8px 16px;">
+                    💾 SAVE CROP
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
