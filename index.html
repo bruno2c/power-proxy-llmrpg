@@ -44,7 +44,7 @@
                     data-tab="live-dashboard"
                     onclick="window.switchTab('live-dashboard')"
                 >
-                    💼 BOARDROOM MONITOR
+                    💼 MONITOR DO CONSELHO
                 </button>
                 <button
                     class="tab-btn"
@@ -52,7 +52,7 @@
                     data-tab="analytics-tab"
                     onclick="window.switchTab('analytics-tab')"
                 >
-                    📈 DEALS & ANALYTICS
+                    📈 ACORDOS & ANÁLISES
                 </button>
                 <button
                     class="tab-btn"
@@ -60,7 +60,7 @@
                     data-tab="storybook-tab"
                     onclick="window.switchTab('storybook-tab')"
                 >
-                    📖 VISUAL STORYBOOK
+                    📖 CRÔNICA VISUAL
                 </button>
                 <button
                     class="tab-btn"
@@ -68,7 +68,7 @@
                     data-tab="init-matrix"
                     onclick="window.switchTab('init-matrix')"
                 >
-                    👥 BOARD APPOINTMENT
+                    👥 NOMEAÇÃO DO CONSELHO
                 </button>
                 <button
                     class="tab-btn"
@@ -76,7 +76,7 @@
                     data-tab="rolodex-tab"
                     onclick="window.switchTab('rolodex-tab')"
                 >
-                    📋 POWER CONTACTS
+                    📋 REDE DE CONTATOS
                 </button>
                 <button
                     class="tab-btn"
@@ -84,7 +84,7 @@
                     data-tab="config-tab"
                     onclick="window.switchTab('config-tab')"
                 >
-                    ⚙️ COMPLIANCE & DEALS
+                    ⚙️ COMPLIANCE & REGRAS
                 </button>
             </div>
 
@@ -126,185 +126,109 @@
             <div id="live-dashboard" class="tab-content">
                 <div class="blueprint-dossier">
                     <span style="color: var(--comic-amber)"
-                        >📋 TARGET DESIGN ENVIRONMENT CONFIGURATION:</span
+                        >📋 REGISTRO DE GOVERNANÇA DA HOLDING:</span
                     >
                     <div
                         style="
                             display: grid;
-                            grid-template-columns: repeat(4, 1fr);
+                            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                             gap: 10px;
                             margin-top: 8px;
                             color: #fff;
                         "
                     >
                         <div>
-                            • POWERTRAIN:
-                            <span id="lbl-meta-power"
-                                >EV [Electric Vehicle]</span
-                            >
+                            • NOME DA HOLDING:
+                            <span id="lbl-holding-name" style="font-weight: bold; color: var(--comic-amber);">Sterling & Roy Holdings</span>
                         </div>
                         <div>
-                            • FRAME MARKET:
-                            <span id="lbl-meta-seg">Track Weapon</span>
-                        </div>
-                        <div>
-                            • INITIAL FUNDING:
-                            <span id="lbl-meta-fund">Bootstrapped</span>
-                        </div>
-                        <div>
-                            • IDENTITY PERK:
-                            <span id="lbl-meta-perk">Corporate Dropout</span>
+                            • STATUS DO CONSELHO:
+                            <span id="lbl-board-trajectory" style="font-weight: bold; color: var(--comic-green);">Instável (Vácuo de Poder)</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="row-section">
-                    <div class="section-title">📊 COMPANY CURRENT DATA</div>
-                    <div class="company-metrics-grid">
+                    <div class="section-title">📊 MÉTRICAS FINANCEIRAS E CORPORATIVAS (SEMANA <span id="lbl-current-week">1</span>)</div>
+                    <div class="company-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
                         <div class="num-box">
                             <div class="num-label">
-                                Liquid Operational Capital
+                                Caixa da Holding (Runway)
                             </div>
-                            <div class="num-val" id="dash-cash">$120,000</div>
+                            <div class="num-val" id="dash-runway">$4,500,000</div>
                         </div>
                         <div class="num-box">
                             <div class="num-label">
-                                Current Weekly Burn Rate
+                                Queima Semanal (Leverage Burn)
                             </div>
                             <div
                                 class="num-val"
                                 id="dash-burn"
                                 style="color: var(--comic-red)"
                             >
-                                $8,000
+                                $45,000
                             </div>
                         </div>
                         <div class="num-box">
                             <div class="num-label">
-                                Alpha Assembly Progress (<span
-                                    id="lbl-current-week"
-                                    >W1</span
-                                >)
+                                Pressão de Aquisição (Buyout)
                             </div>
                             <div
                                 class="num-val"
-                                id="txt-proto"
+                                id="dash-buyout"
                                 style="color: var(--comic-amber)"
                             >
-                                0%
+                                35%
                             </div>
                         </div>
-                        <div class="num-box" id="active-phase-card" style="display: none;">
+                        <div class="num-box">
                             <div class="num-label">
-                                Active Campaign Phase
+                                Estabilização do Legado
                             </div>
                             <div
                                 class="num-val"
-                                id="txt-active-phase"
-                                style="color: var(--comic-amber); font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 8px;"
+                                id="dash-legacy"
+                                style="color: var(--comic-green)"
                             >
-                                -
+                                35%
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- =================== GLOBAL OBJECTIVES SECTION =================== -->
-                <div class="row-section" id="global-objectives-section" style="display: none;">
-                    <div class="section-title">🎯 GLOBAL CAMPAIGN OBJECTIVES</div>
-                    <div class="objectives-grid" id="objectives-container">
-                        <!-- Dynamic objective cards will be rendered here -->
+                <!-- =================== RELÓGIOS DE AMEAÇA DO CONSELHO =================== -->
+                <div class="row-section" id="boardroom-clocks-section" style="display: none;">
+                    <div class="section-title">⚖️ RELÓGIOS DE AMEAÇA DO CONSELHO</div>
+                    <div class="objectives-grid" id="boardroom-clocks-container">
+                        <!-- Relógios de ameaça serão injetados aqui -->
                     </div>
                 </div>
 
-                <!-- =================== FACILITY INFRASTRUCTURE SECTION =================== -->
-                <div class="row-section" id="facility-infrastructure-section" style="display: none;">
-                    <div class="section-title">🏭 WORKSHOP INFRASTRUCTURE & UTILITIES</div>
-                    
-                    <!-- Layout Grid for Carousel & Gauges -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px; align-items: start;">
-                        <!-- Facility Blueprint Schematic Carousel -->
-                        <div>
-                            <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                                🗺️ WORKSHOP BLUEPRINT SCHEMATIC
-                            </div>
-                            <div id="facility-carousel-container" style="display: flex; justify-content: center;">
-                                <!-- Facility Carousel renders here -->
-                            </div>
-                        </div>
-
-                        <!-- Environmental/Utility Grid Gauges -->
-                        <div>
-                            <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                                ⚡ ENVIRONMENTAL POWER & GRID UTILITIES
-                            </div>
-                            <div id="environmental-grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                                <!-- Environmental gauges render here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Active Bays & Project Clocks -->
-                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                        🏭 ACTIVE BAY MODULES & PROJECT CLOCKS
-                    </div>
-                    <div class="objectives-grid" id="active-bays-container" style="margin-bottom: 24px;">
-                        <!-- Active bay modules and project clocks render here -->
-                    </div>
-
-                    <!-- Infrastructure Nodes -->
-                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                        ⚙️ ACTIVE INFRASTRUCTURE MACHINERY & WORKSTATIONS
-                    </div>
-                    <div class="objectives-grid" id="infrastructure-nodes-container">
-                        <!-- Infrastructure cards render here -->
-                    </div>
-
-                    <!-- Structural Flaws -->
-                    <div id="structural-flaws-title-node" style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 24px; display: none;">
-                        ⚠️ ACTIVE STRUCTURAL FLAWS & SITE DRAWBACKS
-                    </div>
-                    <div class="objectives-grid" id="structural-flaws-container" style="display: none;">
-                        <!-- Flaw cards render here -->
+                <!-- =================== FACÇÕES DO CONSELHO =================== -->
+                <div class="row-section" id="boardroom-factions-section" style="display: none;">
+                    <div class="section-title">🏛️ FACÇÕES DO CONSELHO E BLOCOS DE VOTO</div>
+                    <div class="objectives-grid" id="boardroom-factions-container">
+                        <!-- Facções e blocos de voto serão injetados aqui -->
                     </div>
                 </div>
 
-                <!-- =================== INVENTORY TRACKING SECTION =================== -->
-                <div class="row-section" id="inventory-section" style="display: none;">
-                    <div class="section-title">📦 WORKSHOP INVENTORY TRACKING</div>
-                    
-                    <!-- Vehicles Sub-section -->
-                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px;">
-                        🚗 TRACK-READY VEHICLES & CHASSIS
-                    </div>
-                    <div class="objectives-grid" id="inventory-vehicles-container">
-                        <!-- Vehicle cards render here -->
-                    </div>
-
-                    <!-- Components Sub-section -->
-                    <div style="font-size: 12px; font-weight: bold; color: var(--comic-amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 24px;">
-                        🛠️ STRUCTURAL FEEDSTOCK & HARDWARE COMPONENTS
-                    </div>
-                    <div class="objectives-grid" id="inventory-components-container">
-                        <!-- Component cards render here -->
-                    </div>
-                </div>
-
+                <!-- =================== PERFIS DOS HERDEIROS =================== -->
                 <div class="row-section">
                     <div class="section-title">
-                        👥 PERSONNEL ROSTER (CHAR PROFILES)
+                        👥 PERFIS DOS HERDEIROS (HERDEIROS ATIVOS)
                     </div>
                     <div class="crew-roster-row" id="crew-roster-container">
-                        <!-- Dynamic crew cards will be rendered here -->
+                        <!-- Os perfis dos herdeiros ativos serão renderizados aqui -->
                     </div>
                 </div>
 
+                <!-- =================== SINERGIA DINÁSTICA =================== -->
                 <div class="row-section" id="synergy-section" style="display: none;">
                     <div class="section-title">
-                        🤝 TEAM SYNERGY & RELATIONSHIPS
+                        🤝 ALINHAMENTO E SINERGIA DA DINASTIA
                     </div>
                     <div class="synergy-relationship-grid" id="synergy-relationship-container">
-                        <!-- Dynamic synergy panels with avatars will be rendered here -->
+                        <!-- Sinergia entre os herdeiros será renderizada aqui -->
                     </div>
                 </div>
 
@@ -397,340 +321,112 @@
             <div id="init-matrix" class="tab-content">
                 <div class="row-section">
                     <div class="section-title">
-                        ⚙️ STARTUP PARAMETERS CONFIGURATION MATRIX
+                        ⚙️ MATRIZ DE CONFIGURAÇÃO DA CAMPANHA (2 JOGADORES COMPETITIVOS)
                     </div>
-                    <table class="form-table">
-                        <tr>
-                            <td
-                                style="
-                                    width: 35%;
-                                    font-size: 13px;
-                                    font-weight: bold;
-                                    color: #fff;
-                                "
-                            >
-                                Powertrain Core Blueprint
-                            </td>
-                            <td>
-                                <select id="p-powertrain">
-                                    <option
-                                        value="EV [Electric Vehicle] (Focus: Lithium Chemistry, BMS, High-Voltage systems)"
-                                    >
-                                        EV (Electric Vehicle Pack Architecture)
-                                    </option>
-                                    <option
-                                        value="ICE [Internal Combustion Engine] (Focus: Compression, Turbos, Fuel Mapping)"
-                                    >
-                                        ICE (Internal Combustion Powertrain
-                                        Block)
-                                    </option>
-                                    <option
-                                        value="H2 [Hydrogen Fuel Cell] (Focus: Platinum Catalysts, Pressure Tanks, Complex Plumbing)"
-                                    >
-                                        H2 (Hydrogen Fuel Cell Engine Matrix)
-                                    </option>
+                    
+                    <div style="margin-bottom: 24px; border-bottom: var(--border-thin); padding-bottom: 16px;">
+                        <label style="color: var(--comic-amber); font-weight: bold; font-size: 13px; display: block; margin-bottom: 8px; text-transform: uppercase;">Nome da Holding Corporativa</label>
+                        <input type="text" id="p-holding-name" placeholder="Ex: Sterling & Roy Holdings" style="width: 100%; padding: 12px; background: var(--panel-nested); border: var(--border-thick); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; box-sizing: border-box;" value="Sterling & Roy Holdings" />
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                        <!-- Jogador 1 Card -->
+                        <div style="background: var(--panel-nested); border: var(--border-thick); padding: 20px; box-shadow: 4px 4px 0px var(--ink-black); border-radius: 4px; display: flex; flex-direction: column; gap: 14px;">
+                            <h3 style="color: var(--comic-amber); margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; border-bottom: var(--border-thin); padding-bottom: 8px;">👤 JOGADOR 1</h3>
+                            
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Nome Completo</label>
+                                <input type="text" id="p1-name" value="Lucius Sterling" style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: var(--border-thick); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; box-sizing: border-box;" />
+                            </div>
+                            
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Gênero</label>
+                                <select id="p1-gender" style="background: rgba(0,0,0,0.3);">
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Feminino">Feminino</option>
+                                    <option value="Não-binário">Não-binário</option>
+                                    <option value="Outro">Outro</option>
                                 </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                style="
-                                    font-size: 13px;
-                                    font-weight: bold;
-                                    color: #fff;
-                                "
-                            >
-                                Target Structural Segment
-                            </td>
-                            <td>
-                                <select id="p-segment">
-                                    <option
-                                        value="Track Weapon (Ultra-light, extreme aero, high performance ceiling, niche market)"
-                                    >
-                                        Track Weapon (Aero Track Weapon Sports
-                                        Car)
-                                    </option>
-                                    <option
-                                        value="Urban Commuter (Hyper-efficient micro-car, optimized for scale, thin margins)"
-                                    >
-                                        Urban Commuter (Mass Micro-Car Platform)
-                                    </option>
-                                    <option
-                                        value="Overlander Truck (High-clearance utility workhorse, heavy components, premium markup)"
-                                    >
-                                        Overlander Truck (High Torque Utility
-                                        Workhorse)
-                                    </option>
+                            </div>
+                            
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Cargo / Papel Executivo</label>
+                                <select id="p1-role" onchange="window.handleRoleChange(1)" style="background: rgba(0,0,0,0.3);">
+                                    <option value="O Liquidante">O Liquidante (COO) - Foco em Aquisição e Venda</option>
+                                    <option value="O Governante" selected>O Governante (CSO) - Foco em Controle e Bloqueio</option>
                                 </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                style="
-                                    font-size: 13px;
-                                    font-weight: bold;
-                                    color: #fff;
-                                "
-                            >
-                                Capital Vector Pools
-                            </td>
-                            <td>
-                                <select id="p-funding">
-                                    <option
-                                        value="Bootstrapped ($120k Cash, high crew loyalty, extreme personal risk)"
-                                    >
-                                        Bootstrapped Liquid Personal Savings
-                                        ($120k)
-                                    </option>
-                                    <option
-                                        value="Innovation Grant ($250k Cash, restricted by heavy regulatory red-tape and audits)"
-                                    >
-                                        State Innovation Grant Funding
-                                        allocation ($250k)
-                                    </option>
-                                    <option
-                                        value="Shadow Angel ($500k Cash, erratic investor makes unpredictable feature demands)"
-                                    >
-                                        Shadow Angel Private Asset Investor
-                                        ($500k)
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                style="
-                                    font-size: 13px;
-                                    font-weight: bold;
-                                    color: #fff;
-                                "
-                            >
-                                Architect Backstory Lifepath
-                            </td>
-                            <td>
-                                <select id="p-perk">
-                                    <option
-                                        value="Corporate Dropout (+1 Tech on factory assemblies; Legacy auto executives hold a grudge)"
-                                    >
-                                        Factory Tier-1 Corporate Dropout
-                                    </option>
-                                    <option
-                                        value="Underground Tuner (+10% starting mechanic loyalty; -1 Charisma with state regulators)"
-                                    >
-                                        Grey Market Underground Mechanical Tuner
-                                    </option>
-                                    <option
-                                        value="Academic Prodigy (+1 Forward on software tasks; starting capital reduced by $10k legal debt)"
-                                    >
-                                        University Laboratory Academic Robotics
-                                        Prodigy
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                style="
-                                    font-size: 13px;
-                                    font-weight: bold;
-                                    color: #fff;
-                                "
-                            >
-                                Facility Structural Drawback (Flaw)
-                            </td>
-                            <td>
-                                <select id="p-flaw">
-                                    <option
-                                        value="Drafty Roof (20% chance tools/components short circuit or rust during rain turns)"
-                                    >
-                                        Drafty Workshop Roof Failure Risks
-                                    </option>
-                                    <option
-                                        value="Anxious Co-Founder (Sarah drops 5% morale/week automatically if capital drops under $20k)"
-                                    >
-                                        Risk-Averse Financial Co-Founder
-                                        Blueprint
-                                    </option>
-                                    <option
-                                        value="Improvised Tooling (+10% material costs due to lack of a precision CNC table)"
-                                    >
-                                        Improvised Manual Tooling Mills & Lathes
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span
-                                    style="
-                                        font-size: 13px;
-                                        font-weight: bold;
-                                        color: #fff;
-                                        display: block;
-                                    "
-                                    >Matrix Attribute Distribution Nodes</span
-                                >
-                                <div
-                                    style="
-                                        font-size: 11px;
-                                        color: var(--comic-amber);
-                                        margin-top: 4px;
-                                        font-weight: bold;
-                                    "
-                                >
-                                    AVAILABLE CORE CAPACITY:
-                                    <span id="pool-display">2</span>
+                            </div>
+
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Foto do Avatar (PNG/JPG)</label>
+                                <input type="file" id="p1-avatar-file" accept="image/*" onchange="window.handleAvatarUpload(1, event)" style="font-size: 12px; color: var(--text-muted); width: 100%;" />
+                                <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
+                                    <img id="p1-avatar-preview" src="images/lucius_avatar.png" style="width: 60px; height: 60px; border: var(--border-thin); object-fit: cover; background: #000;" onerror="this.src='images/lucius_avatar.png'" />
+                                    <span style="font-size: 10px; color: var(--text-muted); line-height: 1.3;">Se deixar em branco, usaremos o avatar padrão da pasta.</span>
                                 </div>
-                            </td>
-                            <td>
-                                <div
-                                    style="
-                                        display: grid;
-                                        grid-template-columns: repeat(2, 1fr);
-                                        gap: 12px;
-                                    "
-                                >
-                                    <div
-                                        style="
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                        "
-                                    >
-                                        <span>FIN Nodes: </span>
-                                        <div class="counter-group">
-                                            <button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('tech', -1)"
-                                            >
-                                                -</button
-                                            ><span
-                                                id="v-tech"
-                                                style="
-                                                    width: 15px;
-                                                    text-align: center;
-                                                "
-                                                >0</span
-                                            ><button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('tech', 1)"
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                        "
-                                    >
-                                        <span>CHA Nodes: </span>
-                                        <div class="counter-group">
-                                            <button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('cha', -1)"
-                                            >
-                                                -</button
-                                            ><span
-                                                id="v-cha"
-                                                style="
-                                                    width: 15px;
-                                                    text-align: center;
-                                                "
-                                                >0</span
-                                            ><button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('cha', 1)"
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                        "
-                                    >
-                                        <span>OPS Nodes: </span>
-                                        <div class="counter-group">
-                                            <button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('log', -1)"
-                                            >
-                                                -</button
-                                            ><span
-                                                id="v-log"
-                                                style="
-                                                    width: 15px;
-                                                    text-align: center;
-                                                "
-                                                >0</span
-                                            ><button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('log', 1)"
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                        "
-                                    >
-                                        <span>INT Nodes: </span>
-                                        <div class="counter-group">
-                                            <button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('per', -1)"
-                                            >
-                                                -</button
-                                            ><span
-                                                id="v-per"
-                                                style="
-                                                    width: 15px;
-                                                    text-align: center;
-                                                "
-                                                >0</span
-                                            ><button
-                                                class="btn-square"
-                                                onclick="window.adjustStat('per', 1)"
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
+                            </div>
+
+                            <div id="p1-stats-preview" style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 4px; border: var(--border-thin); line-height: 1.45; font-size: 11px;">
+                                <!-- Filled by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Jogador 2 Card -->
+                        <div style="background: var(--panel-nested); border: var(--border-thick); padding: 20px; box-shadow: 4px 4px 0px var(--ink-black); border-radius: 4px; display: flex; flex-direction: column; gap: 14px;">
+                            <h3 style="color: var(--comic-amber); margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; border-bottom: var(--border-thin); padding-bottom: 8px;">👤 JOGADOR 2</h3>
+                            
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Nome Completo</label>
+                                <input type="text" id="p2-name" value="Leonora Sterling" style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: var(--border-thick); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; box-sizing: border-box;" />
+                            </div>
+                            
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Gênero</label>
+                                <select id="p2-gender" style="background: rgba(0,0,0,0.3);">
+                                    <option value="Feminino" selected>Feminino</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Não-binário">Não-binário</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Cargo / Papel Executivo</label>
+                                <select id="p2-role" onchange="window.handleRoleChange(2)" style="background: rgba(0,0,0,0.3);">
+                                    <option value="O Liquidante" selected>O Liquidante (COO) - Foco em Aquisição e Venda</option>
+                                    <option value="O Governante">O Governante (CSO) - Foco em Controle e Bloqueio</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="color: #fff; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Foto do Avatar (PNG/JPG)</label>
+                                <input type="file" id="p2-avatar-file" accept="image/*" onchange="window.handleAvatarUpload(2, event)" style="font-size: 12px; color: var(--text-muted); width: 100%;" />
+                                <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
+                                    <img id="p2-avatar-preview" src="images/sarah_avatar.png" style="width: 60px; height: 60px; border: var(--border-thin); object-fit: cover; background: #000;" onerror="this.src='images/sarah_avatar.png'" />
+                                    <span style="font-size: 10px; color: var(--text-muted); line-height: 1.3;">Se deixar em branco, usaremos o avatar padrão da pasta.</span>
                                 </div>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+
+                            <div id="p2-stats-preview" style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 4px; border: var(--border-thin); line-height: 1.45; font-size: 11px;">
+                                <!-- Filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+
                     <div style="margin-top: 24px">
-                        <label
-                            style="
-                                color: #fff;
-                                font-weight: bold;
-                                margin-bottom: 8px;
-                                display: block;
-                            "
-                            >DYNAMIC ENGINE SYSTEM PROMPT CODESTREAM</label
-                        >
+                        <label style="color: #fff; font-weight: bold; margin-bottom: 8px; display: block; text-transform: uppercase;">PROMPT INICIAL DO SISTEMA DE REGRAS (GAME MASTER)</label>
                         <textarea
                             id="prompt-output"
                             readonly
                             style="height: 100px"
-                            placeholder="Finalize parameters to compile framework profiles..."
+                            placeholder="Preencha os dados dos herdeiros acima para compilar o prompt inicial..."
                         ></textarea>
                         <button
                             class="btn-submit"
                             onclick="window.compileMasterPrompt()"
+                            style="margin-top: 12px; width: 100%; padding: 15px; font-size: 16px; text-transform: uppercase;"
                         >
-                            COMPILE TARGET TIMELINE PROMPT
+                            🚀 COMPILAR PROMPT E INICIAR CAMPANHA COMPETITIVA
                         </button>
                     </div>
                 </div>

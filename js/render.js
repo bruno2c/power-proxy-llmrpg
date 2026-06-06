@@ -15,52 +15,35 @@ window.renderStateToDashboard = function() {
         window.state.chronicle = window.expandChronicleRanges(window.state.chronicle);
     }
 
-    const cash = window.state && window.state.cash !== undefined ? formatCurrency(window.state.cash) : "0";
-    const burn = window.state && window.state.burn !== undefined ? formatCurrency(window.state.burn) : "0";
-    const progress = window.state && window.state.protoProgress !== undefined ? window.state.protoProgress : "0";
+    const runway = window.state && window.state.corporate_runway !== undefined ? formatCurrency(window.state.corporate_runway) : "0";
+    const burn = window.state && window.state.weekly_leverage_burn !== undefined ? formatCurrency(window.state.weekly_leverage_burn) : "0";
+    const buyout = window.state && window.state.campaign_metrics && window.state.campaign_metrics.buyout_pressure_pct !== undefined ? window.state.campaign_metrics.buyout_pressure_pct : "0";
+    const legacy = window.state && window.state.campaign_metrics && window.state.campaign_metrics.legacy_stabilization_pct !== undefined ? window.state.campaign_metrics.legacy_stabilization_pct : "0";
     const week = window.state && window.state.week !== undefined ? window.state.week : "1";
+    const holdingName = window.state && window.state.campaign_metrics && window.state.campaign_metrics.holding_company_name ? window.state.campaign_metrics.holding_company_name : "Sterling & Roy Holdings";
+    const trajectory = window.state && window.state.campaign_metrics && window.state.campaign_metrics.current_board_trajectory ? window.state.campaign_metrics.current_board_trajectory : "Instável (Vácuo de Poder)";
 
-    const dashCash = document.getElementById("dash-cash");
+    const dashRunway = document.getElementById("dash-runway");
     const dashBurn = document.getElementById("dash-burn");
-    const txtProto = document.getElementById("txt-proto");
+    const dashBuyout = document.getElementById("dash-buyout");
+    const dashLegacy = document.getElementById("dash-legacy");
     const lblCurrentWeek = document.getElementById("lbl-current-week");
+    const lblHoldingName = document.getElementById("lbl-holding-name");
+    const lblBoardTrajectory = document.getElementById("lbl-board-trajectory");
 
-    if (dashCash) dashCash.innerText = `$${cash}`;
+    if (dashRunway) dashRunway.innerText = `$${runway}`;
     if (dashBurn) dashBurn.innerText = `$${burn}`;
-    if (txtProto) txtProto.innerText = `${progress}%`;
-    if (lblCurrentWeek) lblCurrentWeek.innerText = `W${week}`;
+    if (dashBuyout) dashBuyout.innerText = `${buyout}%`;
+    if (dashLegacy) dashLegacy.innerText = `${legacy}%`;
+    if (lblCurrentWeek) lblCurrentWeek.innerText = week;
+    if (lblHoldingName) lblHoldingName.innerText = holdingName;
+    if (lblBoardTrajectory) lblBoardTrajectory.innerText = trajectory;
 
-    // Render active campaign phase card
-    const dashActivePhase = document.getElementById("txt-active-phase");
-    const activePhaseCard = document.getElementById("active-phase-card");
-    if (dashActivePhase && activePhaseCard) {
-        if (window.state && window.state.active_campaign_phase) {
-            dashActivePhase.innerText = window.state.active_campaign_phase;
-            activePhaseCard.style.display = "block";
-        } else {
-            activePhaseCard.style.display = "none";
-        }
-    }
+    // Render boardroom threat clocks
+    window.renderBoardroomClocks();
 
-    // Render global campaign objectives section
-    window.renderGlobalObjectives();
-
-    // Render facility infrastructure & utilities
-    window.renderFacilityInfrastructure();
-
-    // Render workshop inventory tracking
-    window.renderInventory();
-
-    if (window.state && window.state.meta) {
-        const power = document.getElementById("lbl-meta-power");
-        const seg = document.getElementById("lbl-meta-seg");
-        const fund = document.getElementById("lbl-meta-fund");
-        const perk = document.getElementById("lbl-meta-perk");
-        if (power) power.innerText = window.state.meta.powertrain || "";
-        if (seg) seg.innerText = window.state.meta.segment || "";
-        if (fund) fund.innerText = window.state.meta.funding || "";
-        if (perk) perk.innerText = window.state.meta.perk || "";
-    }
+    // Render boardroom factions
+    window.renderBoardroomFactions();
 
     const timelineBox = document.getElementById("timeline-container");
     if (timelineBox) {
@@ -69,7 +52,7 @@ window.renderStateToDashboard = function() {
                 .map((item) => `<li class="ledger-entry">${item}</li>`)
                 .join("");
         } else {
-            timelineBox.innerHTML = `<li class="ledger-entry" style="color: var(--text-muted);">No records found. Paste game turns or import data slates.</li>`;
+            timelineBox.innerHTML = `<li class="ledger-entry" style="color: var(--text-muted);">Nenhum registro encontrado. Cole atualizações de turno ou importe dados.</li>`;
         }
     }
 
@@ -79,29 +62,150 @@ window.renderStateToDashboard = function() {
         window.state.network = {};
     }
     window.renderRolodexView();
-    window.renderAnalyticsView();
+    window.renderConfigView();
 };
 
 // ---------------------------------------------------------------------------
 // Resolve character avatar source (local FS fallback support)
 // ---------------------------------------------------------------------------
 window.getCharacterAvatarSrc = async function(key) {
-    let imgSrc = `images/${key.toLowerCase()}_avatar.png`;
-    const baseChars = ["lucius", "sarah", "leo"];
-    if (!baseChars.includes(key.toLowerCase()) && window.dirHandle) {
+    if (window.state && window.state.heirs && window.state.heirs[key] && window.state.heirs[key].avatar) {
+        if (window.state.heirs[key].avatar.startsWith("data:image/")) {
+            return window.state.heirs[key].avatar;
+        }
+    }
+    
+    let keyLower = key.toLowerCase();
+    let imgSrc = `images/${keyLower}_avatar.png`;
+    if (keyLower === "player_1") imgSrc = `images/lucius_avatar.png`;
+    else if (keyLower === "player_2") imgSrc = `images/sarah_avatar.png`;
+    
+    if (window.dirHandle) {
         try {
             const permitted = await window.verifyDirectoryPermission(false);
             if (permitted) {
                 const avatarsDir = await window.dirHandle.getDirectoryHandle("avatars", { create: false });
-                const fileHandle = await avatarsDir.getFileHandle(`${key.toLowerCase()}_avatar.png`, { create: false });
+                
+                let fileHandle;
+                try {
+                    fileHandle = await avatarsDir.getFileHandle(`${keyLower}_avatar.png`, { create: false });
+                } catch (e) {
+                    fileHandle = await avatarsDir.getFileHandle(`${keyLower}.png`, { create: false });
+                }
+                
                 const file = await fileHandle.getFile();
                 imgSrc = URL.createObjectURL(file);
             }
         } catch (e) {
-            console.debug(`Local avatar for new char ${key} not found in avatars/ directory.`);
+            console.debug(`Local avatar for ${key} not found in avatars/ directory.`);
         }
     }
     return imgSrc;
+};
+
+// ---------------------------------------------------------------------------
+// Boardroom Clocks & Factions rendering helpers
+// ---------------------------------------------------------------------------
+window.renderBoardroomClocks = function() {
+    const section = document.getElementById("boardroom-clocks-section");
+    const container = document.getElementById("boardroom-clocks-container");
+    if (!section || !container) return;
+
+    const clocks = (window.state && window.state.boardroom_clocks) || [];
+    if (clocks.length === 0) {
+        section.style.display = "none";
+        return;
+    }
+
+    section.style.display = "block";
+    let html = "";
+    for (const clock of clocks) {
+        const filled = clock.segments_filled || 0;
+        const total = clock.total_segments || 6;
+        const severity = clock.severity || "Padrão";
+        
+        let barStr = "";
+        for (let i = 0; i < total; i++) {
+            barStr += i < filled ? "█" : "░";
+        }
+        
+        const pct = Math.round((filled / total) * 100);
+        let color = "var(--comic-amber)";
+        if (pct >= 75) color = "var(--comic-red)";
+        else if (pct <= 30) color = "var(--comic-green)";
+
+        html += `
+            <div class="num-box" style="border-color: ${color}; padding: 15px; line-height: 1.4; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; display: flex; justify-content: space-between;">
+                        <span>Relógio de Ameaça</span>
+                        <span style="color: ${color};">${severity}</span>
+                    </div>
+                    <div style="font-size: 15px; font-weight: bold; color: #fff; margin-top: 6px;">${clock.name}</div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">
+                        <span>Progresso: ${filled}/${total} segmentos</span>
+                        <span style="color: ${color}; font-weight: bold;">${pct}%</span>
+                    </div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 18px; color: ${color}; margin-top: 5px; letter-spacing: 2px;">
+                        ${barStr}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+};
+
+window.renderBoardroomFactions = function() {
+    const section = document.getElementById("boardroom-factions-section");
+    const container = document.getElementById("boardroom-factions-container");
+    if (!section || !container) return;
+
+    const factions = (window.state && window.state.boardroom_factions) || [];
+    if (factions.length === 0) {
+        section.style.display = "none";
+        return;
+    }
+
+    section.style.display = "block";
+    let html = "";
+    for (const faction of factions) {
+        const label = faction.label || "Facção Indefinida";
+        const stance = faction.loyalty_stance || "Neutro";
+        const lean = faction.current_lean || "Indeciso";
+        const mod = faction.rule_modifier;
+        
+        let modHtml = "";
+        if (mod && mod.target !== "NONE") {
+            const valSign = mod.value >= 0 ? `+${mod.value}` : mod.value;
+            modHtml = `
+                <div style="margin-top: 8px; font-size: 10px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted);">
+                    <strong style="color: var(--comic-amber);">Efeito Ativo:</strong> ${valSign} para testes de <strong style="color: #fff;">${mod.target}</strong> quando disparado por: <em>"${mod.trigger}"</em>
+                </div>
+            `;
+        }
+
+        let stanceColor = "var(--text-main)";
+        if (stance === "Leal" || stance === "Favorável") stanceColor = "var(--comic-green)";
+        else if (stance === "Hostil" || stance === "Inclinado para a Venda") stanceColor = "var(--comic-red)";
+        else if (stance === "Neutro") stanceColor = "var(--comic-amber)";
+
+        html += `
+            <div class="num-box" style="padding: 15px; border-color: rgba(255,255,255,0.12); line-height: 1.4; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14px; font-weight: bold; color: #fff;">${label}</div>
+                    <div style="display: flex; gap: 15px; font-size: 11px; margin-top: 8px;">
+                        <div>Postura: <span style="color: ${stanceColor}; font-weight: bold;">${stance}</span></div>
+                        <div>Tendência: <span style="color: #fff; font-weight: bold;">${lean}</span></div>
+                    </div>
+                </div>
+                ${modHtml}
+            </div>
+        `;
+    }
+    container.innerHTML = html;
 };
 
 // ---------------------------------------------------------------------------
@@ -111,58 +215,42 @@ window.updateCharacterUIPanels = async function() {
     const container = document.getElementById("crew-roster-container");
     if (!container) return;
 
-    if (!window.state || !window.state.personnel) {
-        container.innerHTML = `<div style="grid-column: span 3; text-align: center; color: var(--text-muted);">No crew members in state.</div>`;
+    if (!window.state || !window.state.heirs) {
+        container.innerHTML = `<div style="grid-column: span 3; text-align: center; color: var(--text-muted);">Nenhum herdeiro configurado no estado.</div>`;
         return;
     }
 
-    const nameMap = {
-        leo: "COUSIN LEO",
-        lucius: "LUCIUS",
-        sarah: "SARAH"
-    };
-
     let html = "";
-    for (const [key, charData] of Object.entries(window.state.personnel)) {
-        if (key === "synergy") continue;
-        const displayName = nameMap[key] || key.toUpperCase();
-
-        const morale = charData.morale;
-        let moraleColor = "";
-        let borderStyle = "";
-        let ringBorderStyle = "";
-
-        if (morale !== undefined) {
-            moraleColor = morale > 75
-                ? "var(--comic-green)"
-                : morale > 40
-                    ? "var(--comic-amber)"
-                    : "var(--comic-red)";
-            borderStyle = `style="border-color: ${moraleColor};"`;
-            ringBorderStyle = `style="border-color: ${moraleColor};"`;
-        } else {
-            ringBorderStyle = `style="border-color: var(--comic-amber);"`;
-        }
-
-        let roleText = "";
-        let roleStyle = "";
-        if (charData.role && morale !== undefined) {
-            roleText = `${charData.role} | EFFICIENCY: ${morale}%`;
-            roleStyle = `style="color: ${moraleColor};"`;
-        } else if (charData.role) {
-            roleText = charData.role;
-        } else if (morale !== undefined) {
-            roleText = `EFFICIENCY: ${morale}%`;
-            roleStyle = `style="color: ${moraleColor};"`;
-        }
-
+    const pKeys = ["player_1", "player_2"];
+    
+    for (const key of pKeys) {
+        const charData = window.state.heirs[key];
+        if (!charData) continue;
+        
+        const displayName = charData.name ? charData.name.toUpperCase() : key.toUpperCase();
+        const gender = charData.gender || "Não especificado";
+        const morale = charData.morale !== undefined ? charData.morale : 100;
+        
+        let moraleColor = morale > 75 ? "var(--comic-green)" : (morale > 40 ? "var(--comic-amber)" : "var(--comic-red)");
+        let borderStyle = `style="border-color: ${moraleColor};"`;
+        let ringBorderStyle = `style="border-color: ${moraleColor};"`;
+        
+        const roleText = `${charData.role} | MORAL: ${morale}% | ${gender}`;
+        const roleStyle = `style="color: ${moraleColor};"`;
+        
         const imgSrc = await window.getCharacterAvatarSrc(key);
-
-        const descriptionHtml = charData.description
-            ? `<div class="crew-desc" style="margin-top: 4px; font-size: 12px; line-height: 1.35; color: var(--text-main);">"${charData.description}"</div>`
-            : "";
-
-        // Helper to render dual stat section (Attribute slider -3 to 5 and Leveling dots 0 to 3)
+        
+        const focusDescription = charData.persona_archetype === "O Liquidante" 
+            ? "Foco: Forçar a aquisição da holding por terceiros, liquidar o patrimônio e realizar um exit massivo."
+            : "Foco: Bloquear propostas de venda, expurgar a influência externa do conselho e consolidar o controle como CEO permanente.";
+            
+        const descriptionHtml = `
+            <div class="crew-desc" style="margin-top: 4px; font-size: 11px; line-height: 1.35; color: var(--text-muted);">
+                <strong>Cargo:</strong> ${charData.persona_archetype}<br/>
+                <em>${focusDescription}</em>
+            </div>
+        `;
+        
         const renderStatSection = (label, val, milestones) => {
             val = val !== undefined ? val : 0;
             const clampedVal = Math.min(5, Math.max(-3, val));
@@ -193,17 +281,13 @@ window.updateCharacterUIPanels = async function() {
                         <span style="color: #fff; font-family: 'JetBrains Mono', monospace;">${clampedVal >= 0 ? '+' + clampedVal : clampedVal}</span>
                     </div>
                     
-                    <!-- Value Bar (-3 to 5) -->
                     <div style="display: flex; height: 5px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); margin-top: 3px; position: relative;">
-                        <!-- Center tick mark at 0 (37.5% position) -->
                         <div style="position: absolute; left: 37.5%; top: 0; width: 1px; height: 100%; background: rgba(255,255,255,0.25);"></div>
-                        <!-- Thumb dot -->
                         <div style="position: absolute; left: ${dotPct}%; top: 50%; transform: translate(-50%, -50%); width: 7px; height: 7px; background: ${thumbColor}; border-radius: 50%; box-shadow: 0 0 4px ${thumbColor};"></div>
                     </div>
                     
-                    <!-- Milestone Progression Bar (0 to 3) -->
                     <div style="display: flex; justify-content: space-between; font-size: 7px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">
-                        <span>Leveling</span>
+                        <span>Progressão</span>
                         <span>${milestones}/3</span>
                     </div>
                     <div style="display: flex; gap: 2px; margin-top: 2px;">
@@ -213,7 +297,6 @@ window.updateCharacterUIPanels = async function() {
             `;
         };
 
-        // Render Assignment Progress Bar
         const assignment = charData.current_assignment;
         let assignmentHtml = "";
         
@@ -222,25 +305,25 @@ window.updateCharacterUIPanels = async function() {
             let progressLabel = "";
             let detailsText = "";
             
-            if (assignment.type === "Quiet Period") {
-                barStr = "⚡ QUIET PERIOD";
-                progressLabel = "DOWNTIME ACTIVE";
-                detailsText = `Action: <strong>${assignment.action}</strong>`;
+            if (assignment.type === "Quiet Period" || assignment.type === "Retração") {
+                barStr = "⚡ PERÍODO DE RETRAÇÃO";
+                progressLabel = "DOWNTIME ATIVO";
+                detailsText = `Ação: <strong>${assignment.action || 'Manobra de Bastidores'}</strong>`;
             } else {
-                const total = assignment.total_weeks || (assignment.weeks_remaining !== undefined ? assignment.weeks_remaining + 2 : 4);
+                const total = assignment.total_weeks || 4;
                 const remaining = assignment.weeks_remaining !== undefined ? assignment.weeks_remaining : 0;
                 const completed = Math.max(0, total - remaining);
                 for (let i = 0; i < total; i++) {
                     barStr += i < completed ? "█" : "░";
                 }
-                progressLabel = `Week ${completed}/${total}`;
-                detailsText = `Task: <strong>${assignment.action || 'Project Clock Mitigation'}</strong>`;
+                progressLabel = `Semana ${completed}/${total}`;
+                detailsText = `Tarefa: <strong>${assignment.action || 'Mitigação de Ameaça'}</strong>`;
             }
             
             assignmentHtml = `
                 <div class="crew-assignment-box" style="margin-bottom: 12px; padding: 8px 10px; background: rgba(0,0,0,0.25); border: var(--border-thin); border-color: var(--comic-amber); border-radius: 4px; line-height: 1.4;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span style="font-size: 8px; color: var(--comic-amber); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Assignment Ledger</span>
+                        <span style="font-size: 8px; color: var(--comic-amber); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Registro de Tarefas</span>
                         <span style="font-size: 9px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">${progressLabel}</span>
                     </div>
                     <div style="font-size: 11px; color: #fff; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${assignment.action || ''}">
@@ -254,14 +337,34 @@ window.updateCharacterUIPanels = async function() {
         } else {
             assignmentHtml = `
                 <div class="crew-assignment-box" style="margin-bottom: 12px; padding: 8px 10px; background: rgba(0,0,0,0.15); border: 1px dashed rgba(255,255,255,0.08); border-radius: 4px; text-align: center;">
-                    <div style="font-size: 10px; color: var(--text-muted);">No Active Assignment / Unassigned</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Sem Tarefa Ativa / Retração Necessária</div>
                 </div>
             `;
         }
 
+        const finances = charData.finances || { personal_cash: 0, weekly_overhead_burn: 0 };
+        const personalCashFormatted = formatCurrency(finances.personal_cash);
+        const personalBurnFormatted = formatCurrency(finances.weekly_overhead_burn);
+        
+        const financesHtml = `
+            <div style="margin-top: 10px; margin-bottom: 10px; font-size: 11px; background: rgba(0,0,0,0.25); border: var(--border-thin); padding: 8px; border-radius: 4px; line-height: 1.4;">
+                <div style="font-size: 8px; color: var(--comic-amber); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Finanças Pessoais</div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Fundos Líquidos:</span>
+                    <strong style="color: #fff;">$${personalCashFormatted}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Custo de Vida Semanal:</span>
+                    <strong style="color: var(--comic-red);">$${personalBurnFormatted}</strong>
+                </div>
+            </div>
+        `;
+
+        const attributes = charData.attributes || { clout: 0, leverage: 0, liquidity: 0, perception: 0 };
+        const progression = charData.progression || { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 };
+
         html += `
             <div class="crew-card" ${borderStyle}>
-                <!-- Row 1: Avatar + Name & Description side by side -->
                 <div style="display: flex; gap: 16px; align-items: flex-start; width: 100%;">
                     <div class="avatar-pill-container" ${ringBorderStyle} style="flex-shrink: 0; margin: 0; position: relative;">
                         <img
@@ -269,7 +372,7 @@ window.updateCharacterUIPanels = async function() {
                             alt="${displayName}"
                             onerror="this.style.display = 'none'"
                         />
-                        <button class="btn-char-desc" onclick="window.editCharDescription('${key}')" title="Edit character dossier">📝</button>
+                        <button class="btn-char-desc" onclick="window.editCharDescription('${key}')" title="Editar dossiê do herdeiro">📝</button>
                     </div>
                     <div style="flex: 1; min-width: 0;">
                         <div class="crew-name" style="font-size: 16px; font-weight: bold; color: var(--comic-amber); margin: 0 0 2px 0;">${displayName}</div>
@@ -280,17 +383,17 @@ window.updateCharacterUIPanels = async function() {
                     </div>
                 </div>
                 
-                <!-- Row 2: Full Width Active Assignment & Attribute / Progression grids -->
                 <div style="width: 100%; margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px;">
                     ${assignmentHtml}
+                    ${financesHtml}
                     <div class="stat-badge-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 4px; border: var(--border-thin); box-sizing: border-box;">
                         <div>
-                            ${renderStatSection("FIN", charData.tech, (charData.progression && charData.progression.tech_milestones) || 0)}
-                            ${renderStatSection("CHA", charData.cha, (charData.progression && charData.progression.cha_milestones) || 0)}
+                            ${renderStatSection("CLOUT (Influência)", attributes.clout, progression.clout_milestones || 0)}
+                            ${renderStatSection("LEVERAGE (Alavancagem)", attributes.leverage, progression.leverage_milestones || 0)}
                         </div>
                         <div>
-                            ${renderStatSection("OPS", charData.log, (charData.progression && charData.progression.log_milestones) || 0)}
-                            ${renderStatSection("INT", charData.per, (charData.progression && charData.progression.per_milestones) || 0)}
+                            ${renderStatSection("LIQUIDITY (Liquidez)", attributes.liquidity, progression.liquidity_milestones || 0)}
+                            ${renderStatSection("PERCEPTION (Percepção)", attributes.perception, progression.perception_milestones || 0)}
                         </div>
                     </div>
                 </div>
@@ -299,81 +402,68 @@ window.updateCharacterUIPanels = async function() {
     }
     container.innerHTML = html;
 
-    // Render synergy section
     const synergySection = document.getElementById("synergy-section");
     const synergyContainer = document.getElementById("synergy-relationship-container");
-    const synergyObj = window.state.personnel.synergy || {};
-    const synergyKeys = Object.keys(synergyObj).filter(synKey => {
-        const parts = synKey.split("_and_");
-        return parts.length === 2;
-    });
-
+    
     if (synergySection && synergyContainer) {
-        if (synergyKeys.length > 0) {
-            synergySection.style.display = "block";
-            let synergyHtml = "";
-            for (const synKey of synergyKeys) {
-                const parts = synKey.split("_and_");
-                const charKey1 = parts[0];
-                const charKey2 = parts[1];
-                const name1 = nameMap[charKey1] || charKey1.toUpperCase();
-                const name2 = nameMap[charKey2] || charKey2.toUpperCase();
-                const synVal = synergyObj[synKey];
-                const val = Math.min(Math.max(parseInt(synVal, 10) || 0, -3), 3);
-
-                let colorClass = "active-neutral";
-                let iconSymbol = "🤝";
-                let label = "STANDARD ALIGNMENT";
-                if (val > 0) {
-                    colorClass = "active-positive";
-                    iconSymbol = "🤝";
-                    label = "COOPERATIVE EFFICIENCY";
-                } else if (val < 0) {
-                    colorClass = "active-negative";
-                    iconSymbol = val === -3 ? "💔" : "⚡";
-                    label = "ACTIVE FRICTION NODE";
-                }
-
-                const formattedVal = val > 0 ? `+${val}` : val;
-
-                let cellsHtml = "";
-                for (let i = -3; i <= 3; i++) {
-                    let fillClass = "";
-                    if (i === val) {
-                        if (val > 0) fillClass = "fill-positive";
-                        else if (val < 0) fillClass = "fill-negative";
-                        else fillClass = "fill-neutral";
-                    }
-                    cellsHtml += `<div class="synergy-mini-cell ${fillClass}"></div>`;
-                }
-
-                const avatarSrc1 = await window.getCharacterAvatarSrc(charKey1);
-                const avatarSrc2 = await window.getCharacterAvatarSrc(charKey2);
-
-                synergyHtml += `
-                    <div class="synergy-relation-card ${colorClass}" title="${name1} & ${name2}: ${label}">
-                        <div class="synergy-avatars-row">
-                            <div class="synergy-mini-avatar" title="${name1}">
-                                <img src="${avatarSrc1}" alt="${name1}" onerror="this.style.display = 'none'">
-                            </div>
-                            <div class="synergy-connection-icon ${colorClass}">${iconSymbol}</div>
-                            <div class="synergy-mini-avatar" title="${name2}">
-                                <img src="${avatarSrc2}" alt="${name2}" onerror="this.style.display = 'none'">
-                            </div>
-                        </div>
-                        <div class="synergy-badge ${colorClass}">
-                            ${name1} ✦ ${name2} (${formattedVal})
-                        </div>
-                        <div class="synergy-mini-visual-bar">
-                            ${cellsHtml}
-                        </div>
-                    </div>
-                `;
-            }
-            synergyContainer.innerHTML = synergyHtml;
-        } else {
-            synergySection.style.display = "none";
+        const synergyVal = (window.state.heirs && window.state.heirs.synergy && window.state.heirs.synergy.player_1_and_player_2) !== undefined
+            ? window.state.heirs.synergy.player_1_and_player_2
+            : 0;
+            
+        synergySection.style.display = "block";
+        const val = Math.min(Math.max(parseInt(synergyVal, 10) || 0, -3), 3);
+        
+        let colorClass = "active-neutral";
+        let iconSymbol = "🤝";
+        let label = "ALINHAMENTO PADRÃO";
+        if (val > 0) {
+            colorClass = "active-positive";
+            iconSymbol = "🤝";
+            label = "EFICIÊNCIA COOPERATIVA";
+        } else if (val < 0) {
+            colorClass = "active-negative";
+            iconSymbol = val === -3 ? "💔" : "⚡";
+            label = "NÓ DE CONFLITO ATIVO";
         }
+
+        const formattedVal = val > 0 ? `+${val}` : val;
+        
+        let cellsHtml = "";
+        for (let i = -3; i <= 3; i++) {
+            let fillClass = "";
+            if (i === val) {
+                if (val > 0) fillClass = "fill-positive";
+                else if (val < 0) fillClass = "fill-negative";
+                else fillClass = "fill-neutral";
+            }
+            cellsHtml += `<div class="synergy-mini-cell ${fillClass}"></div>`;
+        }
+
+        const name1 = window.state.heirs.player_1.name || "Jogador 1";
+        const name2 = window.state.heirs.player_2.name || "Jogador 2";
+
+        const avatarSrc1 = await window.getCharacterAvatarSrc("player_1");
+        const avatarSrc2 = await window.getCharacterAvatarSrc("player_2");
+
+        synergyContainer.innerHTML = `
+            <div class="synergy-relation-card ${colorClass}" title="${name1} & ${name2}: ${label}" style="max-width: 400px; margin: 0 auto;">
+                <div class="synergy-avatars-row">
+                    <div class="synergy-mini-avatar" title="${name1}">
+                        <img src="${avatarSrc1}" alt="${name1}" onerror="this.style.display = 'none'">
+                    </div>
+                    <div class="synergy-connection-icon ${colorClass}">${iconSymbol}</div>
+                    <div class="synergy-mini-avatar" title="${name2}">
+                        <img src="${avatarSrc2}" alt="${name2}" onerror="this.style.display = 'none'">
+                    </div>
+                </div>
+                <div class="synergy-badge ${colorClass}">
+                    ${name1.toUpperCase()} ✦ ${name2.toUpperCase()} (${formattedVal})
+                </div>
+                <div class="synergy-mini-visual-bar">
+                    ${cellsHtml}
+                </div>
+            </div>
+        `;
     }
 };
 
@@ -527,7 +617,7 @@ window.renderWelcomeScreen = function() {
 
     const list = window.getCampaignsList();
     if (list.length === 0) {
-        listContainer.innerHTML = `<div style="text-align: center; padding: 15px; color: var(--text-muted); font-size: 12px; font-family: 'JetBrains Mono', monospace; border: var(--border-thin); background: rgba(0,0,0,0.1);">No saved campaigns found. Start a new timeline above!</div>`;
+        listContainer.innerHTML = `<div style="text-align: center; padding: 15px; color: var(--text-muted); font-size: 12px; font-family: 'JetBrains Mono', monospace; border: var(--border-thin); background: rgba(0,0,0,0.1);">Nenhuma campanha salva encontrada. Inicie uma nova campanha acima!</div>`;
     } else {
         listContainer.innerHTML = list.map(campaign => {
             const dateStr = new Date(campaign.timestamp).toLocaleString();
@@ -535,11 +625,11 @@ window.renderWelcomeScreen = function() {
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); border: var(--border-thin); padding: 8px 12px; gap: 10px;">
                     <div style="flex-grow: 1; min-width: 0;">
                         <div style="font-weight: bold; font-family: 'JetBrains Mono', monospace; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff;">${campaign.name}</div>
-                        <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Saved: ${dateStr}</div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Salvo em: ${dateStr}</div>
                     </div>
                     <div style="display: flex; gap: 8px; flex-shrink: 0;">
-                        <button class="btn-utility" style="padding: 4px 8px; font-size: 11px; background: var(--comic-green); color: var(--ink-black); font-weight: bold;" onclick="window.loadCampaignFromSlot('${campaign.id}')">LOAD</button>
-                        <button class="btn-utility" style="padding: 4px 8px; font-size: 11px; background: var(--comic-red); color: #fff;" onclick="window.deleteCampaignFromList('${campaign.id}')">DELETE</button>
+                        <button class="btn-utility" style="padding: 4px 8px; font-size: 11px; background: var(--comic-green); color: var(--ink-black); font-weight: bold;" onclick="window.loadCampaignFromSlot('${campaign.id}')">CARREGAR</button>
+                        <button class="btn-utility" style="padding: 4px 8px; font-size: 11px; background: var(--comic-red); color: #fff;" onclick="window.deleteCampaignFromList('${campaign.id}')">EXCLUIR</button>
                     </div>
                 </div>
             `;
@@ -558,13 +648,13 @@ window.renderWelcomeScreen = function() {
 window.renderConfigView = function() {
     window.updateDashboardFolderStatus();
 
-    // Render Blueprint Courier Prompt reactively
+    // Render Boardroom Concept prompt reactively
     const blueprintPromptTextarea = document.getElementById("blueprint-prompt-textarea");
     if (blueprintPromptTextarea) {
-        if (window.state && window.state.facility) {
-            blueprintPromptTextarea.value = window.compileBlueprintPrompt(window.state.facility);
+        if (window.state && window.state.heirs) {
+            blueprintPromptTextarea.value = window.compileBlueprintPrompt();
         } else {
-            blueprintPromptTextarea.value = "Awaiting facility state matrix ingestion...";
+            blueprintPromptTextarea.value = "Aguardando inicialização da campanha...";
         }
     }
 
@@ -1196,19 +1286,22 @@ window.renderInventory = function() {
 };
 
 window.editCharDescription = function(charKey) {
-    if (!window.state || !window.state.personnel) return;
-    const char = window.state.personnel[charKey];
+    if (!window.state || !window.state.heirs) return;
+    const char = window.state.heirs[charKey];
     if (!char) return;
 
-    const existingDesc = char.description || "";
-    const newDesc = prompt(`Enter a narrative dossier / description for ${charKey.toUpperCase()}:`, existingDesc);
-    if (newDesc === null) return; // User cancelled
+    const newName = prompt(`Edite o nome de ${char.name || charKey.toUpperCase()}:`, char.name || "");
+    if (newName === null) return;
+    
+    const newGender = prompt(`Edite o gênero de ${newName || char.name}:`, char.gender || "");
+    if (newGender === null) return;
 
-    char.description = newDesc.trim();
+    if (newName.trim()) char.name = newName.trim();
+    char.gender = newGender.trim();
     window.saveState();
     window.updateCharacterUIPanels();
     window.updateMergedPromptDisplay();
-    window.triggerToast("DOSSIER UPDATED", `Dossier details updated for ${charKey.toUpperCase()}.`);
+    window.triggerToast("DOSSIER UPDATED", `Dados atualizados para ${char.name}.`);
 };
 
 // =============================================================================

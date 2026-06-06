@@ -49,145 +49,61 @@ window.DEFAULT_STATE = {
     campaignId: null,
     campaignName: null,
     week: 1,
-    cash: 120000,
-    burn: 8000,
-    protoProgress: 0,
-    active_campaign_phase: "",
-    global_objectives: [],
-    meta: {
-        powertrain: "EV",
-        segment: "Track Weapon",
-        funding: "Bootstrapped",
-        perk: "Corporate Dropout",
+    corporate_runway: 4500000,
+    weekly_leverage_burn: 45000,
+    campaign_metrics: {
+        holding_company_name: "Sterling & Roy Holdings",
+        current_board_trajectory: "Instável (Vácuo de Poder)",
+        buyout_pressure_pct: 35,
+        legacy_stabilization_pct: 35,
+        status: "active"
+    },
+    boardroom_clocks: [],
+    boardroom_factions: [
+        {
+            id: "institutional_hedge_funds",
+            label: "Bloco de Fundos de Investimento Institucional (18% Votos)",
+            loyalty_stance: "Neutro",
+            current_lean: "Inclinado para a Venda",
+            rule_modifier: {
+                target: "LIQUIDITY",
+                value: 1,
+                trigger: "Ações de compra de ações ou alocação de capital direto"
+            }
+        }
+    ],
+    heirs: {
+        player_1: {
+            player_controlled: true,
+            name: "Lucius Sterling",
+            gender: "Masculino",
+            avatar: "player_1_avatar.png",
+            persona_archetype: "O Governante",
+            role: "CHIEF STRATEGY OFFICER (CSO)",
+            morale: 100,
+            attributes: { clout: 4, leverage: 0, liquidity: -1, perception: 2 },
+            finances: { personal_cash: 200000, weekly_overhead_burn: 15000 },
+            progression: { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 },
+            hidden_vulnerabilities: []
+        },
+        player_2: {
+            player_controlled: true,
+            name: "Leonora Sterling",
+            gender: "Feminino",
+            avatar: "player_2_avatar.png",
+            persona_archetype: "O Liquidante",
+            role: "CHIEF OPERATING OFFICER (COO)",
+            morale: 100,
+            attributes: { clout: -1, leverage: 3, liquidity: 2, perception: 1 },
+            finances: { personal_cash: 500000, weekly_overhead_burn: 35000 },
+            progression: { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 },
+            hidden_vulnerabilities: []
+        },
+        synergy: {
+            player_1_and_player_2: 0
+        }
     },
     network: {},
-    facility: {
-        name: "District-9 Industrial Bay",
-        bays: [
-            { id: "bay_1", contents: "Line Alpha Assembly", footprint: "Large" },
-            { id: "bay_2", contents: "Prototype Diagnostic Bench", footprint: "Small" }
-        ],
-        environmental_grid: [
-            { id: "power_grid", label: "Grid Power", current: 45, ceiling: 50, unit: "kW", status: "Nominal" }
-        ],
-        infrastructure_nodes: [
-            {
-                id: "stamping_press",
-                category: "Heavy Machinery",
-                label: "Hydraulic Stamping Press",
-                condition: "Degraded",
-                active_quirk: "Manual Feed Lever",
-                rule_modifier: { target: "TECH", value: -1, trigger: "Chassis fabrication tasks" }
-            }
-        ],
-        structural_flaws: [
-            {
-                id: "drafty_roof",
-                label: "Drafty Roof",
-                severity: "Minor",
-                rule_modifier: { target: "TECH", value: -1, trigger: "Electronics tasks during rain" }
-            }
-        ],
-        project_clocks: []
-    },
-    inventory: {
-        vehicles: [
-            {
-                id: "chassis_03_track_ready",
-                label: "Line Alpha: Vehicle Chassis 03",
-                status: "Safe Stock",
-                condition: "Optimal",
-                powertrain: "EV Weapon Baseline",
-                active_quirk: "Fully calibrated firmware loop",
-                market_value: 120000
-            },
-            {
-                id: "chassis_04_track_ready",
-                label: "Line Alpha: Vehicle Chassis 04",
-                status: "Safe Stock",
-                condition: "Optimal",
-                powertrain: "EV Weapon Baseline",
-                active_quirk: "Fresh calibration profile validation",
-                market_value: 120000
-            }
-        ],
-        components: [
-            {
-                id: "carbon_monocoque_tubs",
-                category: "Structural Raw Materials",
-                label: "OmniControl Carbon Tubs",
-                quantity: 2,
-                unit: "Units",
-                condition: "Optimal",
-                rule_modifier: {
-                    target: "NONE",
-                    value: 0,
-                    trigger: "Baseline chassis structure feedstock"
-                }
-            },
-            {
-                id: "elite_carbon_ceramic_brakes",
-                category: "Performance Hardware",
-                label: "Tier-1 Carbon-Ceramic Brake Kits",
-                quantity: 3,
-                unit: "Sets",
-                condition: "Nominal",
-                rule_modifier: {
-                    target: "TECH",
-                    value: 1,
-                    trigger: "Track performance testing and validation sweeps"
-                }
-            }
-        ]
-    },
-    personnel: {
-        lucius: {
-            role: "ARCHITECT",
-            tech: 0,
-            cha: 0,
-            log: 0,
-            per: 0,
-            description: "Founder and visionary designer. Brilliant at structural pivots but currently struggling with severe operational paranoia. Commands boardroom strategy but fails at basic human perception.",
-            progression: {
-                tech_milestones: 0,
-                cha_milestones: 0,
-                log_milestones: 0,
-                per_milestones: 0
-            },
-            current_assignment: null
-        },
-        sarah: {
-            morale: 100,
-            tech: 2,
-            cha: -1,
-            log: 0,
-            per: 2,
-            description: "Abrasive high-voltage cell architect. Controls all custom firmware loops and thermal configurations. Zero patience for bureaucracy; highly protective of shop engineering secrets.",
-            progression: {
-                tech_milestones: 0,
-                cha_milestones: 0,
-                log_milestones: 0,
-                per_milestones: 0
-            },
-            current_assignment: null
-        },
-        leo: {
-            morale: 100,
-            tech: 1,
-            cha: 1,
-            log: 1,
-            per: -1,
-            description: "Veteran fabrication mechanic who anchors the physical assembly jigs. Fiercely loyal, but currently running on pure exhaustion from extreme shop floor overtime.",
-            progression: {
-                tech_milestones: 0,
-                cha_milestones: 0,
-                log_milestones: 0,
-                per_milestones: 0
-            },
-            current_assignment: null
-        },
-        synergy: { sarah_and_leo: 0 }
-    },
     storybook_images: {},
     facility_images: {},
     chronicle: [],
@@ -294,180 +210,90 @@ window.deleteCampaignFromList = function(campaignId) {
 // ---------------------------------------------------------------------------
 window.ensureStateSanity = function() {
     if (!window.state) return;
-    if (window.state.inventory && window.DEFAULT_STATE && window.state.inventory === window.DEFAULT_STATE.inventory) {
-        window.state.inventory = JSON.parse(JSON.stringify(window.DEFAULT_STATE.inventory));
+    
+    // Seed new competitive keys if they are missing (gracefully upgrading old layouts)
+    if (window.state.corporate_runway === undefined) {
+        window.state.corporate_runway = window.state.cash !== undefined ? window.state.cash : 4500000;
     }
-    if (window.state.facility && window.DEFAULT_STATE && window.state.facility === window.DEFAULT_STATE.facility) {
-        window.state.facility = JSON.parse(JSON.stringify(window.DEFAULT_STATE.facility));
+    if (window.state.weekly_leverage_burn === undefined) {
+        window.state.weekly_leverage_burn = window.state.burn !== undefined ? window.state.burn : 45000;
     }
-    if (!window.state.global_objectives) {
-        window.state.global_objectives = [];
-    }
-    if (window.state.active_campaign_phase === undefined) {
-        window.state.active_campaign_phase = "";
-    }
-    if (!window.state.facility_images) {
-        window.state.facility_images = {};
-    }
-    if (!window.state.facility) {
-        const oldFlaw = (window.state.facility_modifiers && window.state.facility_modifiers.flaw) || "Drafty Roof";
-        window.state.facility = {
-            name: "District-9 Industrial Bay",
-            bays: [
-                { id: "bay_1", contents: "Line Alpha Assembly", footprint: "Large" },
-                { id: "bay_2", contents: "Prototype Diagnostic Bench", footprint: "Small" }
-            ],
-            environmental_grid: [
-                { id: "power_grid", label: "Grid Power", current: 45, ceiling: 50, unit: "kW", status: "Nominal" }
-            ],
-            infrastructure_nodes: [
-                {
-                    id: "stamping_press",
-                    category: "Heavy Machinery",
-                    label: "Hydraulic Stamping Press",
-                    condition: "Nominal",
-                    active_quirk: "Improvised Alignment",
-                    rule_modifier: { target: "TECH", value: 0, trigger: "Chassis fabrication tasks" }
-                }
-            ],
-            structural_flaws: [
-                {
-                    id: oldFlaw.toLowerCase().replace(/[^a-z0-9]+/g, "_"),
-                    label: oldFlaw,
-                    severity: "Minor",
-                    rule_modifier: { target: "TECH", value: -1, trigger: "Electronics tasks during rain" }
-                }
-            ]
+    if (!window.state.campaign_metrics) {
+        window.state.campaign_metrics = {
+            holding_company_name: (window.state.meta && window.state.meta.holding_company_name) || "Sterling & Roy Holdings",
+            current_board_trajectory: window.state.active_campaign_phase || "Instável (Vácuo de Poder)",
+            buyout_pressure_pct: window.state.protoProgress !== undefined ? window.state.protoProgress : 35,
+            legacy_stabilization_pct: 35,
+            status: "active"
         };
     }
-    if (!window.state.inventory) {
-        window.state.inventory = {
-            vehicles: [
-                {
-                    id: "chassis_03_track_ready",
-                    label: "Line Alpha: Vehicle Chassis 03",
-                    status: "Safe Stock",
-                    condition: "Optimal",
-                    powertrain: "EV Weapon Baseline",
-                    active_quirk: "Fully calibrated firmware loop",
-                    market_value: 120000
-                },
-                {
-                    id: "chassis_04_track_ready",
-                    label: "Line Alpha: Vehicle Chassis 04",
-                    status: "Safe Stock",
-                    condition: "Optimal",
-                    powertrain: "EV Weapon Baseline",
-                    active_quirk: "Fresh calibration profile validation",
-                    market_value: 120000
+    if (!window.state.boardroom_clocks) {
+        window.state.boardroom_clocks = (window.state.facility && window.state.facility.project_clocks) ? window.state.facility.project_clocks : [];
+    }
+    if (!window.state.boardroom_factions) {
+        window.state.boardroom_factions = [
+            {
+                id: "institutional_hedge_funds",
+                label: "Bloco de Fundos de Investimento Institucional (18% Votos)",
+                loyalty_stance: "Neutro",
+                current_lean: "Inclinado para a Venda",
+                rule_modifier: {
+                    target: "LIQUIDITY",
+                    value: 1,
+                    trigger: "Ações de compra de ações ou alocação de capital direto"
                 }
-            ],
-            components: [
-                {
-                    id: "carbon_monocoque_tubs",
-                    category: "Structural Raw Materials",
-                    label: "OmniControl Carbon Tubs",
-                    quantity: 2,
-                    unit: "Units",
-                    condition: "Optimal",
-                    rule_modifier: {
-                        target: "NONE",
-                        value: 0,
-                        trigger: "Baseline chassis structure feedstock"
-                    }
-                },
-                {
-                    id: "elite_carbon_ceramic_brakes",
-                    category: "Performance Hardware",
-                    label: "Tier-1 Carbon-Ceramic Brake Kits",
-                    quantity: 3,
-                    unit: "Sets",
-                    condition: "Nominal",
-                    rule_modifier: {
-                        target: "TECH",
-                        value: 1,
-                        trigger: "Track performance testing and validation sweeps"
-                    }
-                }
-            ]
+            }
+        ];
+    }
+    if (!window.state.heirs) {
+        window.state.heirs = {
+            player_1: {
+                player_controlled: true,
+                name: "Lucius Sterling",
+                gender: "Masculino",
+                avatar: "player_1_avatar.png",
+                persona_archetype: "O Governante",
+                role: "CHIEF STRATEGY OFFICER (CSO)",
+                morale: 100,
+                attributes: { clout: 4, leverage: 0, liquidity: -1, perception: 2 },
+                finances: { personal_cash: 200000, weekly_overhead_burn: 15000 },
+                progression: { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 },
+                hidden_vulnerabilities: []
+            },
+            player_2: {
+                player_controlled: true,
+                name: "Leonora Sterling",
+                gender: "Feminino",
+                avatar: "player_2_avatar.png",
+                persona_archetype: "O Liquidante",
+                role: "CHIEF OPERATING OFFICER (COO)",
+                morale: 100,
+                attributes: { clout: -1, leverage: 3, liquidity: 2, perception: 1 },
+                finances: { personal_cash: 500000, weekly_overhead_burn: 35000 },
+                progression: { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 },
+                hidden_vulnerabilities: []
+            },
+            synergy: {
+                player_1_and_player_2: 0
+            }
         };
     }
-    if (window.state.facility && !window.state.facility.project_clocks) {
-        window.state.facility.project_clocks = [];
+    // Synergy validation
+    if (!window.state.heirs.synergy) {
+        window.state.heirs.synergy = { player_1_and_player_2: 0 };
     }
-    if (!window.state.personnel) window.state.personnel = {};
-    for (const [key, char] of Object.entries(window.state.personnel)) {
-        if (key === "synergy") continue;
-        if (!char.progression) {
-            char.progression = {
-                tech_milestones: 0,
-                cha_milestones: 0,
-                log_milestones: 0,
-                per_milestones: 0
-            };
-        } else {
-            if (char.progression.tech_milestones === undefined) char.progression.tech_milestones = 0;
-            if (char.progression.cha_milestones === undefined) char.progression.cha_milestones = 0;
-            if (char.progression.log_milestones === undefined) char.progression.log_milestones = 0;
-            if (char.progression.per_milestones === undefined) char.progression.per_milestones = 0;
-        }
-        if (char.current_assignment === undefined) {
-            char.current_assignment = null;
-        }
+    if (window.state.heirs.synergy.player_1_and_player_2 === undefined) {
+        window.state.heirs.synergy.player_1_and_player_2 = 0;
     }
-    if (!window.state.personnel.synergy) {
-        window.state.personnel.synergy = {};
-    }
-
-    // Remove any legacy synergy keys that involve Lucius
-    for (const synKey of Object.keys(window.state.personnel.synergy)) {
-        if (synKey.includes("lucius")) {
-            delete window.state.personnel.synergy[synKey];
-        }
-    }
-
-    // Ensure every companion pair has a canonical sorted synergy key
-    const characters = Object.keys(window.state.personnel).filter(
-        k => k !== "synergy" && k !== "lucius"
-    );
-
-    for (let i = 0; i < characters.length; i++) {
-        for (let j = i + 1; j < characters.length; j++) {
-            const charA = characters[i];
-            const charB = characters[j];
-
-            const key1 = `${charA}_and_${charB}`;
-            const key2 = `${charB}_and_${charA}`;
-
-            const existingVal1 = window.state.personnel.synergy[key1];
-            const existingVal2 = window.state.personnel.synergy[key2];
-
-            const finalVal = existingVal1 !== undefined
-                ? existingVal1
-                : (existingVal2 !== undefined ? existingVal2 : 0);
-
-            const sortedKey = [charA, charB].sort().join("_and_");
-            window.state.personnel.synergy[sortedKey] = Math.min(
-                Math.max(parseInt(finalVal, 10) || 0, -3), 3
-            );
-
-            if (sortedKey !== key1 && window.state.personnel.synergy[key1] !== undefined) {
-                delete window.state.personnel.synergy[key1];
-            }
-            if (sortedKey !== key2 && window.state.personnel.synergy[key2] !== undefined) {
-                delete window.state.personnel.synergy[key2];
-            }
-        }
-    }
-
-    // Upgrade legacy slates: seed history if missing
+    
+    // Support history array
     if (!window.state.history || window.state.history.length === 0) {
         window.state.history = [
             {
                 week: window.state.week !== undefined ? window.state.week : 1,
-                cash: window.state.cash !== undefined ? window.state.cash : 0,
-                burn: window.state.burn !== undefined ? window.state.burn : 0,
-                protoProgress: window.state.protoProgress !== undefined ? window.state.protoProgress : 0
+                corporate_runway: window.state.corporate_runway,
+                weekly_leverage_burn: window.state.weekly_leverage_burn,
+                buyout_pressure_pct: window.state.campaign_metrics.buyout_pressure_pct
             }
         ];
     }

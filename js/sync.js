@@ -26,34 +26,24 @@ function _parseRawInput(raw) {
 // ---------------------------------------------------------------------------
 function _mergeStateDelta(delta) {
     // Scalar fields
-    if (delta.week !== undefined)          window.state.week = delta.week;
-    if (delta.cash !== undefined)          window.state.cash = delta.cash;
-    if (delta.burn !== undefined)          window.state.burn = delta.burn;
-    if (delta.protoProgress !== undefined) window.state.protoProgress = delta.protoProgress;
+    if (delta.week !== undefined) window.state.week = delta.week;
+    
+    // Corporate fields
+    if (delta.corporate_runway !== undefined) window.state.corporate_runway = delta.corporate_runway;
+    if (delta.weekly_leverage_burn !== undefined) window.state.weekly_leverage_burn = delta.weekly_leverage_burn;
+
+    if (delta.campaign_metrics) {
+        window.state.campaign_metrics = { ...(window.state.campaign_metrics || {}), ...delta.campaign_metrics };
+    }
+    if (delta.boardroom_clocks !== undefined) {
+        window.state.boardroom_clocks = delta.boardroom_clocks;
+    }
+    if (delta.boardroom_factions !== undefined) {
+        window.state.boardroom_factions = delta.boardroom_factions;
+    }
+
     if (delta.storybook_images !== undefined) window.state.storybook_images = delta.storybook_images;
     if (delta.facility_images !== undefined) window.state.facility_images = delta.facility_images;
-    if (delta.active_campaign_phase !== undefined) window.state.active_campaign_phase = delta.active_campaign_phase;
-    if (delta.global_objectives !== undefined) window.state.global_objectives = delta.global_objectives;
-
-    if (delta.meta) {
-        window.state.meta = { ...(window.state.meta || {}), ...delta.meta };
-    }
-    if (delta.facility) {
-        window.state.facility = { ...(window.state.facility || {}), ...delta.facility };
-        if (delta.facility.bays) window.state.facility.bays = delta.facility.bays;
-        if (delta.facility.environmental_grid) window.state.facility.environmental_grid = delta.facility.environmental_grid;
-        if (delta.facility.infrastructure_nodes) window.state.facility.infrastructure_nodes = delta.facility.infrastructure_nodes;
-        if (delta.facility.structural_flaws) window.state.facility.structural_flaws = delta.facility.structural_flaws;
-        if (delta.facility.project_clocks) window.state.facility.project_clocks = delta.facility.project_clocks;
-    }
-    if (delta.inventory) {
-        window.state.inventory = { ...(window.state.inventory || {}), ...delta.inventory };
-        if (delta.inventory.vehicles) window.state.inventory.vehicles = delta.inventory.vehicles;
-        if (delta.inventory.components) window.state.inventory.components = delta.inventory.components;
-    }
-    if (delta.facility_modifiers) {
-        window.state.facility_modifiers = { ...(window.state.facility_modifiers || {}), ...delta.facility_modifiers };
-    }
 
     // Chronicle merge or overwrite
     if (delta.chronicle !== undefined) {
@@ -93,24 +83,46 @@ function _mergeStateDelta(delta) {
         }
     }
 
-    // Personnel merge (including synergy normalisation)
-    if (!window.state.personnel) window.state.personnel = {};
-    if (delta.personnel) {
-        for (const [key, val] of Object.entries(delta.personnel)) {
+    // Heirs merge (including synergy normalisation)
+    if (!window.state.heirs) window.state.heirs = {};
+    if (delta.heirs) {
+        for (const [key, val] of Object.entries(delta.heirs)) {
             if (key === "synergy") {
-                if (!window.state.personnel.synergy) window.state.personnel.synergy = {};
+                if (!window.state.heirs.synergy) window.state.heirs.synergy = {};
                 for (const [synKey, synVal] of Object.entries(val)) {
                     const parts = synKey.split("_and_");
                     if (parts.length === 2) {
                         const sortedKey = parts.sort().join("_and_");
                         const clampedVal = Math.min(Math.max(parseInt(synVal, 10) || 0, -3), 3);
-                        window.state.personnel.synergy[sortedKey] = clampedVal;
+                        window.state.heirs.synergy[sortedKey] = clampedVal;
                     } else {
-                        window.state.personnel.synergy[synKey] = synVal;
+                        window.state.heirs.synergy[synKey] = synVal;
                     }
                 }
             } else {
-                window.state.personnel[key] = { ...(window.state.personnel[key] || {}), ...val };
+                if (!window.state.heirs[key]) window.state.heirs[key] = {};
+                const heir = window.state.heirs[key];
+                
+                if (val.player_controlled !== undefined) heir.player_controlled = val.player_controlled;
+                if (val.name !== undefined) heir.name = val.name;
+                if (val.gender !== undefined) heir.gender = val.gender;
+                if (val.avatar !== undefined) heir.avatar = val.avatar;
+                if (val.persona_archetype !== undefined) heir.persona_archetype = val.persona_archetype;
+                if (val.role !== undefined) heir.role = val.role;
+                if (val.morale !== undefined) heir.morale = val.morale;
+
+                if (val.attributes) {
+                    heir.attributes = { ...(heir.attributes || {}), ...val.attributes };
+                }
+                if (val.finances) {
+                    heir.finances = { ...(heir.finances || {}), ...val.finances };
+                }
+                if (val.progression) {
+                    heir.progression = { ...(heir.progression || {}), ...val.progression };
+                }
+                if (val.hidden_vulnerabilities) {
+                    heir.hidden_vulnerabilities = val.hidden_vulnerabilities;
+                }
             }
         }
     }
@@ -127,11 +139,15 @@ function _mergeStateDelta(delta) {
     if (!window.state.history) window.state.history = [];
     const currentWeekNum = window.state.week || 1;
     const existingRecordIndex = window.state.history.findIndex(h => h.week === currentWeekNum);
+    const buyoutPressure = (window.state.campaign_metrics && window.state.campaign_metrics.buyout_pressure_pct) !== undefined
+        ? window.state.campaign_metrics.buyout_pressure_pct
+        : 0;
+
     const newRecord = {
         week: currentWeekNum,
-        cash: window.state.cash !== undefined ? window.state.cash : 0,
-        burn: window.state.burn !== undefined ? window.state.burn : 0,
-        protoProgress: window.state.protoProgress !== undefined ? window.state.protoProgress : 0
+        corporate_runway: window.state.corporate_runway !== undefined ? window.state.corporate_runway : 0,
+        weekly_leverage_burn: window.state.weekly_leverage_burn !== undefined ? window.state.weekly_leverage_burn : 0,
+        buyout_pressure_pct: buyoutPressure
     };
     if (existingRecordIndex >= 0) {
         window.state.history[existingRecordIndex] = newRecord;
@@ -235,18 +251,22 @@ window.syncDelta = async function() {
             window.state = Object.assign({}, window.DEFAULT_STATE, {
                 campaignId: Date.now().toString()
             });
-            window.state.history = [{ week: 1, cash: window.state.cash, burn: window.state.burn, protoProgress: 0 }];
+            window.state.history = [{
+                week: 1,
+                corporate_runway: window.state.corporate_runway,
+                weekly_leverage_burn: window.state.weekly_leverage_burn,
+                buyout_pressure_pct: (window.state.campaign_metrics && window.state.campaign_metrics.buyout_pressure_pct) || 35
+            }];
             window.setAppState("game");
         } else if (!window.state.campaignId) {
             window.state.campaignId = Date.now().toString();
         }
 
-        // Auto-update campaign name if meta or week changed
-        if (!window.state.campaignName || delta.meta || delta.week !== undefined) {
-            const pt = (delta.meta && delta.meta.powertrain) || (window.state.meta && window.state.meta.powertrain) || "EV";
-            const sg = (delta.meta && delta.meta.segment) || (window.state.meta && window.state.meta.segment) || "Track Weapon";
+        // Auto-update campaign name if campaign_metrics or week changed
+        if (!window.state.campaignName || delta.campaign_metrics || delta.week !== undefined) {
+            const company = (delta.campaign_metrics && delta.campaign_metrics.holding_company_name) || (window.state.campaign_metrics && window.state.campaign_metrics.holding_company_name) || "Sterling & Roy Holdings";
             const wk = delta.week !== undefined ? delta.week : (window.state.week || 1);
-            window.state.campaignName = `Campaign: ${pt} ${sg} (W${wk})`;
+            window.state.campaignName = `Campanha: ${company} (S${wk})`;
         }
 
         _mergeStateDelta(delta);
@@ -279,7 +299,7 @@ window.exportDataSlateJson = function() {
         const dataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.state, null, 2));
         const dlAnchorNode = document.createElement("a");
         dlAnchorNode.setAttribute("href", dataString);
-        dlAnchorNode.setAttribute("download", `apex_blueprint_week_${window.state.week}_save.json`);
+        dlAnchorNode.setAttribute("download", `poder_procuracao_semana_${window.state.week}_save.json`);
         document.body.appendChild(dlAnchorNode);
         dlAnchorNode.click();
         dlAnchorNode.remove();
@@ -300,7 +320,7 @@ window.importDataSlateJson = function(event) {
     reader.onload = function(e) {
         try {
             const loadedState = JSON.parse(e.target.result);
-            if (loadedState.cash === undefined || loadedState.chronicle === undefined) {
+            if ((loadedState.cash === undefined && loadedState.corporate_runway === undefined) || loadedState.chronicle === undefined) {
                 window.triggerToast("🚨 DATA REJECTION", "Save file missing required core structural properties keys.");
                 return;
             }

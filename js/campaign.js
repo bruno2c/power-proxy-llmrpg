@@ -75,140 +75,276 @@ window.setAppState = function(appState) {
 // ---------------------------------------------------------------------------
 // Start new campaign wizard
 // ---------------------------------------------------------------------------
+window.handleRoleChange = function(playerIndex) {
+    const p1Role = document.getElementById("p1-role");
+    const p2Role = document.getElementById("p2-role");
+    if (!p1Role || !p2Role) return;
+    
+    if (playerIndex === 1) {
+        if (p1Role.value === "O Liquidante") {
+            p2Role.value = "O Governante";
+        } else {
+            p2Role.value = "O Liquidante";
+        }
+    } else {
+        if (p2Role.value === "O Liquidante") {
+            p1Role.value = "O Governante";
+        } else {
+            p1Role.value = "O Liquidante";
+        }
+    }
+    
+    window.updateRolePreviews();
+};
+
+window.updateRolePreviews = function() {
+    const p1RoleVal = document.getElementById("p1-role").value;
+    const p2RoleVal = document.getElementById("p2-role").value;
+    
+    const p1Preview = document.getElementById("p1-stats-preview");
+    const p2Preview = document.getElementById("p2-stats-preview");
+    
+    const rolesData = {
+        "O Liquidante": {
+            title: "CHIEF OPERATING OFFICER (COO)",
+            focus: "Forçar a aquisição da holding por terceiros, liquidar o patrimônio e realizar um exit massivo.",
+            attributes: "CLOUT: -1 | LEVERAGE: +3 | LIQUIDITY: +2 | PERCEPTION: +1",
+            finances: "Fundos Pessoais: $500,000 | Custo Operacional Semanal: $35,000"
+        },
+        "O Governante": {
+            title: "CHIEF STRATEGY OFFICER (CSO)",
+            focus: "Bloquear propostas de venda, expurgar a influência externa do conselho e consolidar o controle como CEO permanente.",
+            attributes: "CLOUT: +4 | LEVERAGE: 0 | LIQUIDITY: -1 | PERCEPTION: +2",
+            finances: "Fundos Pessoais: $200,000 | Custo Operacional Semanal: $15,000"
+        }
+    };
+    
+    if (p1Preview) {
+        const data = rolesData[p1RoleVal];
+        p1Preview.innerHTML = `
+            <strong style="color: var(--comic-amber);">${data.title}</strong><br/>
+            <strong>Foco:</strong> ${data.focus}<br/>
+            <strong>Atributos base:</strong> <span style="font-family: 'JetBrains Mono', monospace; color: #fff;">${data.attributes}</span><br/>
+            <strong>Finanças iniciais:</strong> ${data.finances}
+        `;
+    }
+    if (p2Preview) {
+        const data = rolesData[p2RoleVal];
+        p2Preview.innerHTML = `
+            <strong style="color: var(--comic-amber);">${data.title}</strong><br/>
+            <strong>Foco:</strong> ${data.focus}<br/>
+            <strong>Atributos base:</strong> <span style="font-family: 'JetBrains Mono', monospace; color: #fff;">${data.attributes}</span><br/>
+            <strong>Finanças iniciais:</strong> ${data.finances}
+        `;
+    }
+};
+
+window.handleAvatarUpload = function(playerIndex, event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (playerIndex === 1) {
+        window.p1AvatarFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            window.p1AvatarBase64 = e.target.result;
+            const preview = document.getElementById("p1-avatar-preview");
+            if (preview) preview.src = window.p1AvatarBase64;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        window.p2AvatarFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            window.p2AvatarBase64 = e.target.result;
+            const preview = document.getElementById("p2-avatar-preview");
+            if (preview) preview.src = window.p2AvatarBase64;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+// Start new campaign wizard
 window.startNewCampaignWizard = async function() {
-    // Prompt for a new local folder selection and bootstrap it
     const success = await window.selectAndBootstrapNewCampaignDirectory();
-    if (!success) return; // User aborted or conflict occurred
+    if (!success) return; 
 
-    window.stats = { tech: 0, cha: 0, log: 0, per: 0 };
-    window.pointPool = 2;
+    // Reset avatar tracking variables
+    window.p1AvatarBase64 = "";
+    window.p2AvatarBase64 = "";
+    window.p1AvatarFile = null;
+    window.p2AvatarFile = null;
 
-    document.getElementById("p-powertrain").selectedIndex = 0;
-    document.getElementById("p-segment").selectedIndex = 0;
-    document.getElementById("p-funding").selectedIndex = 0;
-    document.getElementById("p-perk").selectedIndex = 0;
-    document.getElementById("p-flaw").selectedIndex = 0;
+    // Reset form elements
+    const holdingName = document.getElementById("p-holding-name");
+    if (holdingName) holdingName.value = "Sterling & Roy Holdings";
 
-    document.getElementById("v-tech").innerText = "0";
-    document.getElementById("v-cha").innerText  = "0";
-    document.getElementById("v-log").innerText  = "0";
-    document.getElementById("v-per").innerText  = "0";
-    document.getElementById("pool-display").innerText = "2";
+    const p1Name = document.getElementById("p1-name");
+    if (p1Name) p1Name.value = "Lucius Sterling";
+
+    const p2Name = document.getElementById("p2-name");
+    if (p2Name) p2Name.value = "Leonora Sterling";
+
+    const p1Gender = document.getElementById("p1-gender");
+    if (p1Gender) p1Gender.selectedIndex = 0;
+
+    const p2Gender = document.getElementById("p2-gender");
+    if (p2Gender) p2Gender.selectedIndex = 0;
+
+    const p1Role = document.getElementById("p1-role");
+    if (p1Role) p1Role.value = "O Governante";
+
+    const p2Role = document.getElementById("p2-role");
+    if (p2Role) p2Role.value = "O Liquidante";
+
+    const p1Preview = document.getElementById("p1-avatar-preview");
+    if (p1Preview) p1Preview.src = "images/lucius_avatar.png";
+
+    const p2Preview = document.getElementById("p2-avatar-preview");
+    if (p2Preview) p2Preview.src = "images/sarah_avatar.png";
+
+    const p1FileInput = document.getElementById("p1-avatar-file");
+    if (p1FileInput) p1FileInput.value = "";
+
+    const p2FileInput = document.getElementById("p2-avatar-file");
+    if (p2FileInput) p2FileInput.value = "";
 
     document.getElementById("prompt-output").value = "";
 
+    window.updateRolePreviews();
     window.setAppState("wizard");
 };
 
-// ---------------------------------------------------------------------------
 // Compile campaign from wizard form — builds window.state, saves, copies prompt
-// ---------------------------------------------------------------------------
 window.compileMasterPrompt = function() {
-    if (!window.validateCreation(window.stats.tech, window.stats.cha, window.stats.log, window.stats.per)) {
-        window.triggerToast("⚠️ STRUCTURAL FAULT", "ALLOCATE ALL REMAINING MATRIX ENERGY CAPACITY STACK CAPS.");
+    const holdingName = document.getElementById("p-holding-name").value.trim();
+    const p1Name = document.getElementById("p1-name").value.trim();
+    const p2Name = document.getElementById("p2-name").value.trim();
+    
+    if (!holdingName || !p1Name || !p2Name) {
+        window.triggerToast("⚠️ NOME REQUERIDO", "Por favor, preencha o nome da holding e de ambos os herdeiros.");
         return;
     }
 
-    const powertrain = document.getElementById("p-powertrain").value;
-    const segment    = document.getElementById("p-segment").value;
-    const funding    = document.getElementById("p-funding").value;
-    const perk       = document.getElementById("p-perk").value;
-    const flaw       = document.getElementById("p-flaw").value;
+    const p1Gender = document.getElementById("p1-gender").value;
+    const p1Role = document.getElementById("p1-role").value;
+    
+    const p2Gender = document.getElementById("p2-gender").value;
+    const p2Role = document.getElementById("p2-role").value;
 
-    let classDesignation = "ENGINEER ARCHITECT";
-    if (window.stats.cha >= 2)      classDesignation = "PROJECT DIRECTOR";
-    else if (window.stats.log >= 2) classDesignation = "OPERATIONS CHIEF";
-    else if (window.stats.per >= 2) classDesignation = "PRODUCT STRATEGIST";
-
-    const startCash = funding.includes("500k") ? 500000
-        : (funding.includes("250k") ? 250000 : 120000);
+    const heirs = {
+        player_1: {
+            player_controlled: true,
+            name: p1Name,
+            gender: p1Gender,
+            avatar: window.p1AvatarBase64 || "player_1_avatar.png",
+            persona_archetype: p1Role,
+            role: p1Role === "O Liquidante" ? "CHIEF OPERATING OFFICER (COO)" : "CHIEF STRATEGY OFFICER (CSO)",
+            morale: 100,
+            attributes: p1Role === "O Liquidante" 
+                ? { clout: -1, leverage: 3, liquidity: 2, perception: 1 }
+                : { clout: 4, leverage: 0, liquidity: -1, perception: 2 },
+            finances: p1Role === "O Liquidante"
+                ? { personal_cash: 500000, weekly_overhead_burn: 35000 }
+                : { personal_cash: 200000, weekly_overhead_burn: 15000 },
+            progression: { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 },
+            hidden_vulnerabilities: []
+        },
+        player_2: {
+            player_controlled: true,
+            name: p2Name,
+            gender: p2Gender,
+            avatar: window.p2AvatarBase64 || "player_2_avatar.png",
+            persona_archetype: p2Role,
+            role: p2Role === "O Liquidante" ? "CHIEF OPERATING OFFICER (COO)" : "CHIEF STRATEGY OFFICER (CSO)",
+            morale: 100,
+            attributes: p2Role === "O Liquidante" 
+                ? { clout: -1, leverage: 3, liquidity: 2, perception: 1 }
+                : { clout: 4, leverage: 0, liquidity: -1, perception: 2 },
+            finances: p2Role === "O Liquidante"
+                ? { personal_cash: 500000, weekly_overhead_burn: 35000 }
+                : { personal_cash: 200000, weekly_overhead_burn: 15000 },
+            progression: { clout_milestones: 0, leverage_milestones: 0, liquidity_milestones: 0, perception_milestones: 0 },
+            hidden_vulnerabilities: []
+        },
+        synergy: {
+            player_1_and_player_2: 0
+        }
+    };
 
     window.state = Object.assign({}, window.DEFAULT_STATE, {
         campaignId: Date.now().toString(),
         week: 1,
-        cash: startCash,
-        burn: 8000,
-        protoProgress: 0,
-        meta: {
-            powertrain: powertrain.split(" ")[0],
-            segment:    segment.split(" ")[0],
-            funding:    funding.split(" ")[0],
-            perk:       perk.split(" ")[0],
+        corporate_runway: 4500000,
+        weekly_leverage_burn: 45000,
+        campaign_metrics: {
+            holding_company_name: holdingName,
+            current_board_trajectory: "Instável (Vácuo de Poder)",
+            buyout_pressure_pct: 35,
+            legacy_stabilization_pct: 35,
+            status: "active"
         },
-        network: {},
-        facility: {
-            name: "District-9 Industrial Bay",
-            bays: [
-                { id: "bay_1", contents: "Line Alpha Assembly", footprint: "Large" },
-                { id: "bay_2", contents: "Prototype Diagnostic Bench", footprint: "Small" }
-            ],
-            environmental_grid: [
-                { id: "power_grid", label: "Grid Power", current: 45, ceiling: 50, unit: "kW", status: "Nominal" }
-            ],
-            infrastructure_nodes: [
-                {
-                    id: "stamping_press",
-                    category: "Heavy Machinery",
-                    label: "Hydraulic Stamping Press",
-                    condition: "Nominal",
-                    active_quirk: "Improvised Alignment",
-                    rule_modifier: { target: "TECH", value: 0, trigger: "Chassis fabrication tasks" }
+        boardroom_clocks: [],
+        boardroom_factions: [
+            {
+                id: "institutional_hedge_funds",
+                label: "Bloco de Fundos de Investimento Institucional (18% Votos)",
+                loyalty_stance: "Neutro",
+                current_lean: "Inclinado para a Venda",
+                rule_modifier: {
+                    target: "LIQUIDITY",
+                    value: 1,
+                    trigger: "Ações de compra de ações ou alocação de capital direto"
                 }
-            ],
-            structural_flaws: [
-                {
-                    id: flaw.split("(")[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "_"),
-                    label: flaw.split("(")[0].trim(),
-                    severity: "Minor",
-                    rule_modifier: (function() {
-                        const flawId = flaw.split("(")[0].trim().toLowerCase();
-                        if (flawId.includes("anxious")) {
-                            return { target: "CHA", value: -1, trigger: "Interactions under budget pressure" };
-                        } else if (flawId.includes("improvised")) {
-                            return { target: "TECH", value: -1, trigger: "Precision machining or assembly" };
-                        }
-                        return { target: "TECH", value: -1, trigger: "Electronics tasks during rain" };
-                    })()
-                }
-            ]
-        },
-        personnel: {
-            lucius: {
-                role: classDesignation,
-                tech: window.stats.tech,
-                cha:  window.stats.cha,
-                log:  window.stats.log,
-                per:  window.stats.per,
-                description: "Founder and lead designer of the workshop, responsible for driving the prototype's high-performance engineering vision and coordinating garage operations."
-            },
-            sarah: {
-                morale: 100,
-                tech: 2,
-                cha: -1,
-                log: 0,
-                per: 2,
-                description: "Abrasive high-voltage cell architect. Controls all custom firmware loops and thermal configurations. Zero patience for bureaucracy; highly protective of shop engineering secrets."
-            },
-            leo: {
-                morale: 100,
-                tech: 1,
-                cha: 1,
-                log: 1,
-                per: -1,
-                description: "Experienced fabrication mechanic who handles heavy tooling, metalwork, and physical vehicle assembly on the shop floor."
-            },
-            synergy: { sarah_and_leo: 0 }
-        },
+            }
+        ],
+        heirs: heirs,
         storybook_images: {},
         chronicle: [],
-        history: [{ week: 1, cash: startCash, burn: 8000, protoProgress: 0 }]
+        history: [{ 
+            week: 1, 
+            corporate_runway: 4500000, 
+            weekly_leverage_burn: 45000, 
+            buyout_pressure_pct: 35 
+        }]
     });
 
-    if (perk.includes("Academic")) {
-        window.state.cash -= 10000;
-    }
+    window.state.campaignName = `Holding: ${holdingName} (W${window.state.week})`;
 
-    window.state.campaignName = `Campaign: ${window.state.meta.powertrain} ${window.state.meta.segment} (W${window.state.week})`;
+    // Save custom avatars if local directory is bound
+    if (window.dirHandle) {
+        window.verifyDirectoryPermission(true).then(async (permitted) => {
+            if (permitted) {
+                try {
+                    const avatarsDir = await window.dirHandle.getDirectoryHandle("avatars", { create: true });
+                    if (window.p1AvatarFile) {
+                        const fileHandle = await avatarsDir.getFileHandle("player_1.png", { create: true });
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(window.p1AvatarFile);
+                        await writable.close();
+                        
+                        const fileHandle2 = await avatarsDir.getFileHandle("player_1_avatar.png", { create: true });
+                        const writable2 = await fileHandle2.createWritable();
+                        await writable2.write(window.p1AvatarFile);
+                        await writable2.close();
+                    }
+                    if (window.p2AvatarFile) {
+                        const fileHandle = await avatarsDir.getFileHandle("player_2.png", { create: true });
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(window.p2AvatarFile);
+                        await writable.close();
+                        
+                        const fileHandle2 = await avatarsDir.getFileHandle("player_2_avatar.png", { create: true });
+                        const writable2 = await fileHandle2.createWritable();
+                        await writable2.write(window.p2AvatarFile);
+                        await writable2.close();
+                    }
+                } catch (e) {
+                    console.warn("Falha ao salvar avatares no diretório local:", e);
+                }
+            }
+        });
+    }
 
     window.saveState();
     if (window.dirHandle && typeof window.saveDirHandle === "function") {
@@ -225,7 +361,6 @@ window.compileMasterPrompt = function() {
         const promptText = manualPromptNode.value;
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(promptText).catch(() => {
-                // Fallback for browsers that restrict clipboard without user gesture
                 manualPromptNode.select();
                 document.execCommand("copy");
             });
@@ -237,10 +372,11 @@ window.compileMasterPrompt = function() {
 
     window.setAppState("game");
     window.switchTab("config-tab");
-    window.triggerToast("📋 RULES & TIMELINE COMPILED", "Unified Game Master initial instructions copied to clipboard.");
+    window.triggerToast("📋 REGRAS E INSTRUÇÕES COMPILADAS", "As instruções iniciais do Game Master foram copiadas para a área de transferência.");
 
     window.autosaveBackupToLocalDirectory();
 };
+
 
 // ---------------------------------------------------------------------------
 // Load campaign from a saved slot (localStorage campaign list)
@@ -427,21 +563,24 @@ window.updateMergedPromptDisplay = function() {
         }
     }
 
-    // Omit legacy/unused top-level fields (e.g. saraMorale, leoMorale, facility_modifiers, etc.)
+    // Remove avatars from heirs to reduce token size in AI prompt
+    if (cleanState.heirs) {
+        if (cleanState.heirs.player_1) delete cleanState.heirs.player_1.avatar;
+        if (cleanState.heirs.player_2) delete cleanState.heirs.player_2.avatar;
+    }
+
+    // Omit legacy/unused top-level fields
     const allowedKeys = [
         "campaignId",
         "campaignName",
         "week",
-        "cash",
-        "burn",
-        "protoProgress",
-        "active_campaign_phase",
-        "global_objectives",
-        "meta",
+        "corporate_runway",
+        "weekly_leverage_burn",
+        "campaign_metrics",
+        "boardroom_clocks",
+        "boardroom_factions",
+        "heirs",
         "network",
-        "facility",
-        "inventory",
-        "personnel",
         "chronicle"
     ];
     for (const key of Object.keys(cleanState)) {
@@ -452,10 +591,10 @@ window.updateMergedPromptDisplay = function() {
 
     const activePayload = JSON.stringify(cleanState, null, 2);
 
-    const isNewGame = window.state.week === 1 && window.state.protoProgress === 0;
+    const isNewGame = window.state.week === 1 && (!window.state.history || window.state.history.length <= 1);
     const executionInstruction = isNewGame
-        ? `🏁 EXECUTE INITIAL ASSEMBLY LINE ENGAGEMENT (WEEK 1)\nEstablish the initial aged blueprint workshop setting. Introduce Companion Sarah & Companion Leo utilizing their defined companion stats, and issue the first week 1 strategic mechanical choice check array.`
-        : `🔄 EXECUTE MID-GAME SYSTEM CONVERGENCE RESUMPTION\nRe-establish simulation timeline context natively directly on active Week ${window.state.week}. Reference previous historical ledger entries tracked in the 'chronicle' array to shape choices.`;
+        ? `🏁 EXECUTE INITIAL BOARDROOM ENGAGEMENT (WEEK 1)\nEstablish the initial dynamic corporate scenario and boardroom tension. Introduce both Player 1 (${window.state.heirs.player_1.name} as ${window.state.heirs.player_1.persona_archetype}) and Player 2 (${window.state.heirs.player_2.name} as ${window.state.heirs.player_2.persona_archetype}) using their defined attributes. Present the first week 1 strategic choice dilemma array for their executive consideration, highlighting the competitive boardroom dynamic in Brazilian Portuguese.`
+        : `🔄 EXECUTE MID-GAME SYSTEM CONVERGENCE RESUMPTION\nRe-establish simulation timeline context natively directly on active Week ${window.state.week}. Reference previous historical ledger entries tracked in the 'chronicle' array to shape choices, and continue the competitive boardroom simulation in Brazilian Portuguese.`;
 
     const dynamicPrompt = window.getDynamicPrompt(activePayload, executionInstruction);
     const rules = window.RULES_PROMPT || "";

@@ -58,40 +58,37 @@ window.loadPromptsFromFiles = async function() {
 };
 
 // ---------------------------------------------------------------------------
-// Blueprint concept illustration compiler (dynamic template literal engine)
+// Boardroom concept illustration compiler (dynamic template literal engine)
 // ---------------------------------------------------------------------------
-window.compileBlueprintPrompt = function(facility) {
-    if (!facility) return "Awaiting facility state matrix ingestion...";
+window.compileBlueprintPrompt = function() {
+    if (!window.state) return "Aguardando inicialização da campanha...";
     
-    const activeBays = (facility.bays || []).map((b, i) => `Bay ${i+1}: ${b.contents} (${b.footprint} footprint)`).join("\n    ");
-    const machinery = (facility.infrastructure_nodes || []).map(m => `${m.label} [Status: ${m.condition}] - Visual details: ${m.active_quirk}`).join("\n    ");
-    const flaws = (facility.structural_flaws || []).map(f => `${f.label} [Severity: ${f.severity}] - Visual details: ${f.active_quirk}`).join("\n    ");
+    const holdingName = (window.state.campaign_metrics && window.state.campaign_metrics.holding_company_name) || "Sterling & Roy Holdings";
+    const p1 = window.state.heirs.player_1;
+    const p2 = window.state.heirs.player_2;
+    
+    const p1Desc = p1 ? `${p1.name} (${p1.role})` : "Executivo 1";
+    const p2Desc = p2 ? `${p2.name} (${p2.role})` : "Executivo 2";
+    
+    const clocks = (window.state.boardroom_clocks || []).map(c => `• ${c.name} (${c.segments_filled}/${c.total_segments} segmentos)`).join("\n    ") || "Nenhum relógio de ameaça ativo.";
 
-    return `[ARCHITECTURAL RE-RENDER SYSTEM DIRECTIVE]
-You are an expert concept artist and drafting specialist specializing in technical isometric cross-sections. Generate a detailed architectural schematic of a mechanical workshop based on the active inventory configuration.
-
-=========================================
-🎨 IMMUTABLE GRAPHIC NOVEL ART DIRECTION
-=========================================
-- STYLE: Heavy, raw ink-black line work, distressed paper texture overlays, and deep architectural cross-hatching shadows. No soft 3D airbrushing or modern gradients.
-- CAMERA PERSPECTIVE: Fixed 3/4 isometric cutaway profile view, looking down from a high, fixed angle into a three-bay industrial warehouse. Camera position must never shift.
-- PALETTE: Strictly restricted dual-tone palette utilizing vintage blueprint navy (#1a365d) for structural lines/shadows and rich industrial mechanical amber (#f6ad55) for active indicators, equipment screens, or sparks.
+    return `[SCENE ARTWORK DIRECTIVE: PODER & PROCURAÇÃO]
+Generate a prestige cinematic photograph representing the current high-stakes boardroom tension for the holding company "${holdingName}".
 
 =========================================
-📊 LIVE INFRASTRUCTURE CONFIGURATION DATA
+👥 ACTIVE CHARACTERS IN CONFLICT
 =========================================
-Translate the following structural entities, machinery slots, and environmental data directly into the isometric layout framework:
+- Player 1: ${p1Desc}
+- Player 2: ${p2Desc}
+- Current Faction Clocks/Threats:
+    ${clocks}
 
-- ACTIVE BAY SLOTS:
-    ${activeBays || "All workshop bays currently clear and empty."}
-
-- INFRASTRUCTURE & HEAVY TOOLS:
-    ${machinery || "No heavy machinery installed on shop floor."}
-
-- MECHANICAL & STRUCTURAL FLAWS:
-    ${flaws || "No active structural defects or damage visible."}
-
-Ensure every object listed above is assigned a distinct, logical spatial location within the three warehouse bays. Maintain the exact same structural perimeter lines as past iterations. Render the complete updated layout now.`;
+=========================================
+🎨 IMMUTABLE PRESTIGE ART DIRECTION
+=========================================
+- STYLE RULES: Prestige analog cinematic style, shallow depth of field, 35mm cinema lenses, sharp symmetrical and razor-sharp framing, high-luxury brutalist or modern corporate penthouse architecture. Subtle and elegant film grain texture.
+- COLOR THEORY: Minimalist and austere palette based on corporate navy blue, polished concrete slate grey, and sharp, warm tungsten lights (#f6ad55) reflecting off penthouse boardroom glass surfaces and executive desks. No neon or futuristic elements.
+- COMPOSITION: Wide cinematic shot showing two rival executives, ${p1Desc} and ${p2Desc}, positioned in a cold, symmetric corporate setting. High contrast, sharp corporate drama atmosphere.`;
 };
 
 // ---------------------------------------------------------------------------
