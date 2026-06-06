@@ -108,13 +108,13 @@ window.updateRolePreviews = function() {
         "O Liquidante": {
             title: "CHIEF OPERATING OFFICER (COO)",
             focus: "Forçar a aquisição da holding por terceiros, liquidar o patrimônio e realizar um exit massivo.",
-            attributes: "CLOUT: -1 | LEVERAGE: +3 | LIQUIDITY: +2 | PERCEPTION: +1",
+            attributes: "Influência (CLOUT): -1 | Alavancagem (LEVERAGE): +3 | Liquidez (LIQUIDITY): +2 | Percepção (PERCEPTION): +1",
             finances: "Fundos Pessoais: $500,000 | Custo Operacional Semanal: $35,000"
         },
         "O Governante": {
             title: "CHIEF STRATEGY OFFICER (CSO)",
             focus: "Bloquear propostas de venda, expurgar a influência externa do conselho e consolidar o controle como CEO permanente.",
-            attributes: "CLOUT: +4 | LEVERAGE: 0 | LIQUIDITY: -1 | PERCEPTION: +2",
+            attributes: "Influência (CLOUT): +4 | Alavancagem (LEVERAGE): 0 | Liquidez (LIQUIDITY): -1 | Percepção (PERCEPTION): +2",
             finances: "Fundos Pessoais: $200,000 | Custo Operacional Semanal: $15,000"
         }
     };
@@ -208,8 +208,8 @@ window.startNewCampaignWizard = async function() {
 
     const p2FileInput = document.getElementById("p2-avatar-file");
     if (p2FileInput) p2FileInput.value = "";
-
-    document.getElementById("prompt-output").value = "";
+    const promptOutput = document.getElementById("prompt-output");
+    if (promptOutput) promptOutput.value = "";
 
     window.updateRolePreviews();
     window.setAppState("wizard");

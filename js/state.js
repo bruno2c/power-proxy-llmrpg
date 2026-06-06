@@ -123,8 +123,8 @@ window.pointPool = 2;
 // ---------------------------------------------------------------------------
 // localStorage key — canonical app key (migrated from legacy "linc_motors_save_slate")
 // ---------------------------------------------------------------------------
-window.SAVE_KEY = "apex_blueprint_save_slate";
-window.CAMPAIGN_LIST_KEY = "apex_blueprint_campaign_list";
+window.SAVE_KEY = "power_proxy_save_slate";
+window.CAMPAIGN_LIST_KEY = "power_proxy_campaign_list";
 
 // ---------------------------------------------------------------------------
 // localStorage migration shim — runs once on first load. If an old

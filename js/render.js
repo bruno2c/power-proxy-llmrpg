@@ -388,12 +388,12 @@ window.updateCharacterUIPanels = async function() {
                     ${financesHtml}
                     <div class="stat-badge-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 4px; border: var(--border-thin); box-sizing: border-box;">
                         <div>
-                            ${renderStatSection("CLOUT (Influência)", attributes.clout, progression.clout_milestones || 0)}
-                            ${renderStatSection("LEVERAGE (Alavancagem)", attributes.leverage, progression.leverage_milestones || 0)}
+                            ${renderStatSection("INFLUÊNCIA (Clout)", attributes.clout, progression.clout_milestones || 0)}
+                            ${renderStatSection("ALAVANCAGEM (Leverage)", attributes.leverage, progression.leverage_milestones || 0)}
                         </div>
                         <div>
-                            ${renderStatSection("LIQUIDITY (Liquidez)", attributes.liquidity, progression.liquidity_milestones || 0)}
-                            ${renderStatSection("PERCEPTION (Percepção)", attributes.perception, progression.perception_milestones || 0)}
+                            ${renderStatSection("LIQUIDEZ (Liquidity)", attributes.liquidity, progression.liquidity_milestones || 0)}
+                            ${renderStatSection("PERCEPÇÃO (Perception)", attributes.perception, progression.perception_milestones || 0)}
                         </div>
                     </div>
                 </div>

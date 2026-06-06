@@ -43,7 +43,7 @@ header {
 }
 
 h1 {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 32px;
     color: var(--comic-amber);
     margin: 0;
@@ -65,7 +65,7 @@ h1 {
 }
 
 .tab-btn {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 16px;
     background: var(--panel-bg);
     border: var(--border-thick);
@@ -106,7 +106,7 @@ h1 {
 }
 
 .section-title {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 16px;
     color: var(--text-main);
     background: var(--ink-black);
@@ -146,7 +146,7 @@ h1 {
 }
 
 .num-val {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 32px;
     color: #fff;
     margin-top: 4px;
@@ -179,7 +179,7 @@ h1 {
     gap: 12px;
 }
 .crew-name {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 20px;
     color: #fff;
     margin: 0;
@@ -325,7 +325,7 @@ textarea {
 }
 
 .btn-submit {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 18px;
     background: var(--comic-amber);
     color: var(--ink-black);
@@ -453,7 +453,7 @@ textarea {
     justify-content: center;
     opacity: 0;
     transition: opacity 0.2s ease;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     color: var(--comic-amber);
     font-size: 16px;
     letter-spacing: 1px;
@@ -470,7 +470,7 @@ textarea {
 }
 
 .storybook-week-tag {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 20px;
     color: var(--comic-amber);
     margin: 0;
@@ -544,7 +544,7 @@ textarea {
 }
 
 .lightbox-title {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     color: var(--comic-amber);
     font-size: 18px;
     margin: 0 0 6px 0;
@@ -563,7 +563,7 @@ textarea {
     background: var(--comic-amber);
     color: var(--ink-black);
     border: var(--border-thick);
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 14px;
     padding: 6px 16px;
     cursor: pointer;
@@ -774,7 +774,7 @@ textarea {
 }
 
 .synergy-header {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 14px;
     color: var(--text-main);
     text-transform: uppercase;
@@ -1001,7 +1001,7 @@ textarea {
 }
 
 .analytics-card-title {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 16px;
     color: var(--comic-amber);
     text-transform: uppercase;
@@ -1160,7 +1160,7 @@ textarea {
 }
 
 .objective-title {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: "Outfit", "Inter", sans-serif;
     font-size: 16px;
     color: #fff;
     line-height: 1.2;
